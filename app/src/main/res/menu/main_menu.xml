@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group
+        android:id="@+id/aboutGomessange"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/aboutGomessanger"
+            android:icon="@drawable/contact"
+            android:orderInCategory="100"
+            android:title="About Us"
+            app:showAsAction="never" />
+
+    </group>
+
+    <group
+        android:id="@+id/ork"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/contactus"
+            android:icon="@drawable/aboutus"
+            android:orderInCategory="100"
+            android:title="Contact Us"
+            app:showAsAction="never" />
+
+    </group>
+
+    <group
+        android:id="@+id/abutGomesage"
+        android:checkableBehavior="single"/>
+
+      <!--<group
+         android:id="@+id/logouty"
+         android:checkableBehavior="single">
+
+         <item
+             android:id="@+id/mainlogout"
+             android:icon="@drawable/logout"
+             android:orderInCategory="100"
+             android:title="Logout"
+             app:showAsAction="never" />
+
+     </group>-->
+
+     <group
+         android:id="@+id/abutGomessange"
+         android:checkableBehavior="single">
+
+         <item
+             android:id="@+id/share"
+             android:icon="@drawable/share"
+             android:orderInCategory="100"
+             android:title="Share"
+             app:showAsAction="never" />
+
+     </group>
+
+     <group
+         android:id="@+id/abutGomeange"
+         android:checkableBehavior="single"/>
+
+    <group
+        android:id="@+id/abutGomeane"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/logout"
+            android:orderInCategory="100"
+            android:title="Logout"
+            app:showAsAction="never" />
+
+    </group>
+
+     <group
+         android:id="@+id/abutGomese"
+         android:checkableBehavior="single">
+
+     </group>
+     <!--<group
+         android:id="@+id/hist"
+         android:checkableBehavior="single">
+
+         <item
+             android:id="@+id/history"
+             android:icon="@drawable/ic_action_name"
+             android:iconTint="@color/black"
+             android:orderInCategory="100"
+             android:title="History"
+             app:showAsAction="never" />
+
+     </group>
+-->
+ </menu>

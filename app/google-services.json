@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "892830635242",
+    "firebase_url": "https://kenyamessagesolution-a18f0.firebaseio.com",
+    "project_id": "kenyamessagesolution-a18f0",
+    "storage_bucket": "kenyamessagesolution-a18f0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892830635242:android:8c458c5905a3f2dca6f393",
+        "android_client_info": {
+          "package_name": "smartherd.kenyamessagesolution"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892830635242-m9ae0g51ucr56a7ismdoa65hocpe3l2h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "smartherd.kenyamessagesolution",
+            "certificate_hash": "b54d0919c87e7404b78838152878f45c30dd28f5"
+          }
+        },
+        {
+          "client_id": "892830635242-avkl7kknl9j3h1egm1pv5ipaqnvsqn8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd0drm4cprt26fmMFHcslJdbKRmy7DQMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "892830635242-avkl7kknl9j3h1egm1pv5ipaqnvsqn8l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

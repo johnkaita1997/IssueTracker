@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="Fragments.OneAllcontants">
+
+    <ProgressBar
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/result"
+        app:layout_constraintVertical_bias="0.120000005" />
+
+    <TextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Result will be here"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/upload"
+        app:layout_constraintVertical_bias="0.06999999" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Next upload an xlxs file to upload contacts"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/otherFiles"
+        app:layout_constraintVertical_bias="0.050000012" />
+
+    <Button
+        android:id="@+id/upload"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:background="@drawable/btn_rounded_red"
+        android:backgroundTint="@color/black"
+        android:text="Upload Excel Contacts"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical"
+        android:padding="6dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/black" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Name"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </TextView>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Mobile"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+                        <Spinner
+                            android:id="@+id/themobilespinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Location"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thelocationspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="District"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thedistrictspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Sublocation"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thesublocationspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Village"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thevillagespinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="County"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thecountyspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Subcounty"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thesubcountyspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Email"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/theemailspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Gender"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thegenderspinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1"
+                            android:text="Name"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <View
+                            android:layout_width="2dp"
+                            android:layout_height="20dp"
+                            android:background="@android:color/black" />
+
+
+                        <Spinner
+                            android:id="@+id/thenamespinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="60dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:text="Row Number"
+                            android:textColor="@color/red_wine"
+                            android:textSize="15dp">
+
+                        </Spinner>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="2dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/black" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/black" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="@string/instructions_nspecify_how_your_rows_are_ignore_rows_you_don_t_have"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:background="@color/maincolor"
+        android:textColor="@color/white"
+        android:id="@+id/otherFiles"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Specify other fields"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintVertical_bias="0.01999998" />
+
+    <Button
+        android:id="@+id/allcontacts"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/btn_rounded_red"
+        android:backgroundTint="@color/maincolor"
+        android:text="View all contacats"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progress"
+        app:layout_constraintVertical_bias="0.100000024" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
