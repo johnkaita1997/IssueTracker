@@ -1,20 +1,28 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "com.apollographql.apollo"
 
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "smartherd.kenyamessagesolution"
-        minSdkVersion 16
+        applicationId "smartherd.githubissuetracker"
+        minSdkVersion 24
         targetSdkVersion 29
         multiDexEnabled true
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "1.0.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
     }
 
     packagingOptions {
@@ -42,6 +50,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    apollo {
+        // instruct the compiler to generate Kotlin models
+        generateKotlinModels = true
+    }
 }
 
 dependencies {
@@ -49,117 +61,24 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.firebase:firebase-core:11.8.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-
-    //These are Coroutines
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1"
-
-    //These are copied dependencies
-    implementation 'com.google.android.gms:play-services-maps:11.8.0'
-    implementation 'com.google.android.gms:play-services:11.8.0'
-    implementation 'com.google.android.gms:play-services-location:11.8.0'
-    //noinspection GradleCompatible
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.firebase:firebase-core:11.8.0'
-    implementation 'com.google.firebase:firebase-firestore:11.8.0'
-    implementation 'com.google.firebase:firebase-database:11.8.0'
-    implementation 'com.google.firebase:firebase-auth:11.8.0'
-    implementation 'com.google.firebase:firebase-messaging:11.8.0'
-    implementation 'com.google.firebase:firebase-ads:11.8.0'
-    implementation 'com.google.firebase:firebase-storage:11.8.0'
-    //implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
-    implementation 'com.google.android.material:material:1.0.0'
-
-    // FirebaseUI for Cloud Firestore
-    implementation 'com.firebaseui:firebase-ui-firestore:6.2.1'
-
-    // FirebaseUI for Firebase Auth
-    implementation 'com.firebaseui:firebase-ui-auth:6.2.1'
-    // FirebaseUI for Cloud Firestore
-    implementation 'com.firebaseui:firebase-ui-auth:4.0.0'
-
-    //implementation 'id.zelory:compressor:2.1.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.squareup.okhttp:okhttp:2.4.0'
-    //implementation 'com.afollestad.material-dialogs:core:0.9.5.0'
-    //implementation 'com.github.chrisbanes:PhotoView:2.1.4'
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
-
-    implementation 'com.google.maps.android:android-maps-utils:0.5+'
-
-
-    // implementation 'com.github.mmstq:Gif-ProgressBar-Android:1.0'
-    //noinspection GradleCompatible
-    implementation 'androidx.cardview:cardview:1.0.0'
-    // Cardview is necessary. Neglect if already have.
-    //implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
-
-    //Cat loading library
-    implementation 'com.github.tibolte:elasticdownload:1.0.+'
-    implementation 'com.google.firebase:firebase-firestore:11.8.0'
-    implementation 'com.ss.bannerslider:bannerslider:2.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-
-    //implementation 'com.airbnb.android:lottie:2.0.0'
-
-    // dexter runtime permissions
-    implementation 'com.karumi:dexter:5.0.0'
-
-    //For Sign out
-    implementation "com.google.android.gms:play-services-auth:11.0.4"
-    // ButterKnife view binding
-    //implementation 'com.jakewharton:butterknife:8.8.1'
-    //annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
-
-    //For paypal
-    //implementation 'com.paypal.sdk:paypal-android-sdk:2.15.3'
-
-    //For rating the application
-    implementation 'com.github.hotchemi:android-rate:1.0.1'
-
-    //implementation 'com.github.d-max:spots-dialog:0.7@aar'
-    implementation 'com.firebase:geofire-android:2.1.1'
-    //This one dowes everything about adding drawing the markers between 2 directions in android
-    implementation 'com.github.jd-alexander:library:1.1.0'
-    implementation 'com.androidstudy:daraja:1.0.2'
-    //Loading the animation
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1"
     implementation 'com.github.ybq:Android-SpinKit:1.2.0'
-    //These are implementation for the slider libraries
-    implementation 'com.nineoldandroids:library:2.4.0'
-    implementation 'com.daimajia.slider:library:1.1.5@aar'
-    //This is for the used slider image for android studio
-    implementation 'com.github.smarteist:autoimageslider:1.3.2-appcompat'
-    //Eadier date and time picker
-    implementation 'me.pushy:sdk:1.0.54'
-    implementation 'com.google.android.gms:play-services-ads:11.8.0'
-    implementation 'com.android.billingclient:billing:1.2'
-    implementation 'com.lorentzos.swipecards:library:1.0.9@aar'
-
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    //This one is for animation
-    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
-
-    implementation 'com.shawnlin:number-picker:2.4.9'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-
-    // Paging Library
-    implementation 'androidx.paging:paging-runtime:2.0.0'
-
-    implementation 'com.sun.mail:android-mail:1.6.0'
-    implementation 'com.sun.mail:android-activation:1.6.0'
+    implementation "com.apollographql.apollo:apollo-runtime:2.5.4"
+    implementation "com.apollographql.apollo:apollo-coroutines-support:2.5.4"
+    testImplementation "com.google.truth:truth:1.0.1"
+    androidTestImplementation "com.google.truth:truth:1.0.1"
 }
 
 // ADD THIS AT THE BOTTOM

@@ -1,4 +1,3 @@
-
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
@@ -63,7 +62,8 @@
 
     <style name="Divider.Horizontal" parent="Divider">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item> // You can change thickness here.
+        <item name="android:layout_height">1dp</item>
+        // You can change thickness here.
 
     </style>
 
@@ -90,13 +90,15 @@
         <item name="tabPaddingStart">6dp</item>
         <item name="tabPaddingEnd">6dp</item>
         <item name="tabTextAppearance">@style/AppTabTextAppearance</item>
-        <item name="tabSelectedTextColor">@color/white</item>  //selected color
+        <item name="tabSelectedTextColor">@color/white</item>
+        //selected color
     </style>
 
     <!-- for text -->
     <style name="AppTabTextAppearance" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">12sp</item>
-        <item name="android:textColor">@color/white</item>   // default color
+        <item name="android:textColor">@color/white</item>
+        // default color
         <item name="textAllCaps">true</item>
     </style>
 

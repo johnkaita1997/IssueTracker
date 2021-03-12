@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='MsgShareApp'
+rootProject.name='IssueTracker'

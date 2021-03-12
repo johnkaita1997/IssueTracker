@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="smartherd.kenyamessagesolution.Activities.OneMainActivity">
+    tools:context="smartherd.githubissuetracker.Activities.OneMainActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerlayout"
@@ -33,25 +33,25 @@
                 android:background="#948C9C"
                 android:minHeight="?attr/actionBarSize" />
 
-            //custom style for tab text
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/main_tabs"
-                app:tabIndicator="@color/red_wine"
+                app:tabIndicator="@color/red_300"
                 style="@style/AppTabLayout"
                 app:tabTextColor="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/maincolor"/>
+                android:background="@color/maincolor" />
 
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/tab_Pager"
+                android:paddingHorizontal="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
                 android:layout_marginTop="0dp"
-                android:background="#DCDCDC">
+                android:background="@color/white">
 
             </androidx.viewpager.widget.ViewPager>
 
