@@ -11,7 +11,6 @@ import android.widget.TextView
 import smartherd.githubissuetracker.Activities.Comments
 import smartherd.githubissuetracker.R
 
-
 class CustomAdapter(context: Context, arrayListDetails: ArrayList<Model>) : BaseAdapter() {
 
     private val layoutInflater: LayoutInflater
@@ -59,7 +58,7 @@ class CustomAdapter(context: Context, arrayListDetails: ArrayList<Model>) : Base
         listRowHolder.rcomment.setOnClickListener {
             val intent = Intent(context, Comments::class.java)
             intent.putExtra("index", position.toString())
-            context.startActivity(intent)
+            //context.startActivity(intent)
         }
 
         return view

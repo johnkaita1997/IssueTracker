@@ -35,7 +35,7 @@
                 android:layout_margin="5dp"
                 android:text="Created At"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:layout_marginEnd="20dp"
@@ -47,7 +47,7 @@
                 android:layout_margin="5dp"
                 android:text="State"
                 android:textColor="@color/red_300"
-                android:textSize="16dp" />
+                android:textSize="13dp" />
 
         </LinearLayout>
 
@@ -59,16 +59,16 @@
             android:layout_margin="5dp"
             android:text="TIttle"
             android:textColor="@color/black"
-            android:textSize="16dp" />
+            android:textSize="13dp" />
 
         <TextView
             android:id="@+id/rloadcomments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Mmmmmh"
+            android:text="None"
             android:textColor="@color/black"
-            android:textSize="16dp"
+            android:textSize="13dp"
             android:visibility="gone" />
 
         <LinearLayout
@@ -79,29 +79,27 @@
 
             <TextView
                 android:id="@+id/rdevelopername"
-                android:layout_width="wrap_content"
+                android:layout_width="170dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:layout_weight="1"
-                android:drawableLeft="@drawable/personaf"
+                android:drawableLeft="@drawable/person"
                 android:drawablePadding="10dp"
                 android:text="Developer Name"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/rcomment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:layout_weight="1"
                 android:drawableLeft="@drawable/ic_message_black_24dp"
-                android:drawablePadding="1dp"
+                android:drawablePadding="3dp"
                 android:gravity="center_horizontal"
                 android:text="Comments No"
                 android:textAlignment="center"
                 android:textColor="@color/black"
-                android:textSize="16dp" />
+                android:textSize="13dp"/>
 
         </LinearLayout>
     </LinearLayout>

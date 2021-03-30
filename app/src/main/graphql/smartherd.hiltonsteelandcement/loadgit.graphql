@@ -15,7 +15,7 @@ query loadgit{
                     author{
                         login
                     }
-                    comments(first: 3){
+                    comments(first: 50){
                         nodes{
                             body
                             createdAt

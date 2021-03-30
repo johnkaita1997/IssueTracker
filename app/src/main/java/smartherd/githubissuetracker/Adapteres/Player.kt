@@ -1,5 +1,8 @@
 package smartherd.githubissuetracker.Adapteres
 
+import java.text.SimpleDateFormat
+import java.util.*
+
 class Model {
     var created_at: String? = null
     var comments: String? = null
@@ -40,4 +43,17 @@ class Comments {
         this.developer = developer
     }
 
+}
+
+
+public fun date_Converter (): String {
+    var c = Calendar.getInstance()
+    var daaaay = c.get(Calendar.DAY_OF_MONTH)
+    var date = Date()
+    var simpleDateFormat = SimpleDateFormat("EEEE")
+    var day = simpleDateFormat.format(date).toUpperCase()
+    simpleDateFormat = SimpleDateFormat("MMMM")
+    var month = simpleDateFormat.format(date).toUpperCase()
+    val final_text = "Today $daaaay, $day, $month"
+    return final_text
 }

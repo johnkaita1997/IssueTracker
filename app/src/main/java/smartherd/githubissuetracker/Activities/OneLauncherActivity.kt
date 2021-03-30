@@ -25,11 +25,14 @@ class OneLauncherActivity : AppCompatActivity() {
 
     var cd = ConnectionDetector(this)
     private lateinit var progressBar: ProgressBar
-    var doubleBounce: Sprite = DoubleBounce()
+    public var doubleBounce: Sprite = DoubleBounce()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_one_launcher)
+
+        //Hide the action bar
+        getSupportActionBar()?.hide()
 
         initall()
 
@@ -81,7 +84,7 @@ class OneLauncherActivity : AppCompatActivity() {
     fun gotonextpage() {
         //User is logged in
         Handler().postDelayed({ //Go to the login activity
-            goToActivity(this, OneMainActivity::class.java)
+            goToActivity(this, GraphqlActivity::class.java)
         }, 2000)
     }
 

@@ -17,13 +17,15 @@
         android:roundIcon="@drawable/secondimage"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="smartherd.githubissuetracker.Activities.Comments"></activity>
+        <activity android:name=".Activities.GraphqlActivity"></activity>
+        <activity android:name=".Activities.Comments" />
         <activity
-            android:name="smartherd.githubissuetracker.Activities.OneMainActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
-        <activity android:name="smartherd.githubissuetracker.Activities.OneLauncherActivity">
+            android:name=".Activities.OneMainActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".Activities.OneLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

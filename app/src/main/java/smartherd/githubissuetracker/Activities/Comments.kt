@@ -1,6 +1,7 @@
 package smartherd.githubissuetracker.Activities
 
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_comments.*
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +22,9 @@ class Comments : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_comments)
 
+        //Hide the action bar
+        getSupportActionBar()?.hide()
+
         //stuff that updates ui
         val obj_adapter: CustomAdapter
         obj_adapter = CustomAdapter(this, arrayList_details)
@@ -36,7 +40,6 @@ class Comments : AppCompatActivity() {
         val intent = intent
         val mlist = intent?.getStringExtra("index")
         val position = mlist?.toInt()
-
 
         collect[position]?.forEach { value ->
 
@@ -56,6 +59,5 @@ class Comments : AppCompatActivity() {
             arrayList_details.add(model)
 
         }
-
     }
 }
