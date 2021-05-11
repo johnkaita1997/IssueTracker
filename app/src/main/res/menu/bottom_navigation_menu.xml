@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:visible="true"
+        android:enabled="true"
+        android:iconTint="@color/red_400"
+        android:id="@+id/home"
+        android:icon="@drawable/ic_house"
+        android:title="">
+    </item>
+
+    <item
+        android:visible="true"
+        android:enabled="true"
+        android:iconTint="@color/black"
+        android:id="@+id/notifications"
+        android:icon="@drawable/ic_alert"
+        android:title="">
+    </item>
+
+    <item
+        android:visible="true"
+        android:enabled="true"
+        android:iconTint="@color/black"
+        android:id="@+id/profile"
+        android:icon="@drawable/person"
+        android:title="">
+    </item>
+</menu>

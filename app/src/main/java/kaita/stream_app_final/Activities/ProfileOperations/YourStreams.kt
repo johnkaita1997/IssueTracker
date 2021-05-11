@@ -1,0 +1,232 @@
+package kaita.stream_app_final.Activities.ProfileOperations
+
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
+import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
+import com.shreyaspatil.firebase.recyclerpagination.LoadingState
+import kaita.stream_app_final.Activities.Modals.Options
+import kaita.stream_app_final.Adapteres.FirebaseChecker
+import kaita.stream_app_final.Adapteres.OptionsViewHolder
+import kaita.stream_app_final.Adapteres.sendNotification
+import kaita.stream_app_final.Adapteres.setSafeOnClickListener
+import kaita.stream_app_final.AppConstants.Constants
+import kaita.stream_app_final.AppConstants.Constants.chosen_Answer
+import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
+import kaita.stream_app_final.Extensions.goToActivity_Unfinished
+import kaita.stream_app_final.Extensions.makeLongToast
+import kaita.stream_app_final.Extensions.showAlertDialog
+import kaita.stream_app_final.R
+import kotlinx.android.synthetic.main.activity_your_streams.*
+import java.text.SimpleDateFormat
+import java.util.*
+
+class YourStreams : AppCompatActivity() {
+
+    val options_Query = FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("options")
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_your_streams)
+        initall()
+    }
+
+    private fun initall() {
+        load_Active_Stream_Information()
+        view_all_betters_text_Click()
+        initiate_Firebase_Recycler_View_Options()
+        listenerForCloseStream()
+    }
+
+    private fun listenerForCloseStream() {
+        yourclosestream.setSafeOnClickListener {
+            if (chosen_Answer == "") {
+                showAlertDialog("You have to select the answer first")
+            } else {
+                //Let us play around with the time first
+                FirebaseDatabase.getInstance().getReference().child("streams").child(firebaseAuth.currentUser.uid).child("cashday").addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onCancelled(error: DatabaseError) {
+                        makeLongToast("Error Occured: ${error.message}")
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            val the_cash_day = snapshot.value.toString()
+
+                            val simpleformat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
+                            val current_day = Calendar.getInstance().getTime();
+                            val thecurrent_day = simpleformat.format(current_day)
+
+                            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
+                            val final_current_day: Date = formatter.parse(thecurrent_day)
+                            val final_cash_day: Date = formatter.parse(the_cash_day)
+
+                            if (final_cash_day.compareTo(final_current_day) > 0) {
+                                showAlertDialog("You set the Cash Day on ${final_cash_day}, You can close this Stream only on or after this date, contact us for help")
+                            } else {
+                                //Insert the answer to db first
+                                FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("answer").setValue(
+                                    chosen_Answer).addOnCompleteListener {
+                                    if (it.isComplete) {
+                                        FirebaseDatabase.getInstance().getReference().child("streams").child(firebaseAuth.currentUser.uid).child("stamp")
+                                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                                override fun onCancelled(error: DatabaseError) {
+                                                    makeLongToast(error.message)
+                                                }
+                                                override fun onDataChange(snapshot: DataSnapshot) {
+                                                    val one = snapshot.value.toString()
+                                                    close_The_Stream(one, chosen_Answer)
+                                                }
+                                            })
+                                    } else {
+                                        showAlertDialog("Request incomplete: ${it.exception.toString()}")
+                                    }
+                                }
+                            }
+
+                        } else {
+                            makeLongToast("The Stream was not set up correctly")
+                        }
+                    }
+                })
+            }
+        }
+    }
+
+    private fun close_The_Stream(one: String,  chosenAnswer: String) {
+        FirebaseDatabase.getInstance().getReference().child("manage").child(firebaseAuth.currentUser.uid).child("manage").setValue(
+            firebaseAuth.currentUser.uid).addOnCompleteListener {
+            if (it.isComplete) {
+                FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("remove").setValue("remove").addOnCompleteListener {
+                    if (it.isComplete) {
+                        showAlertDialog("Your Stream was closed, Stream will validate your answer and give you feedback")
+                        sendNotification("admin", "Complete: User = ${firebaseAuth.currentUser.uid}")
+                    }
+                }
+            } else {
+                showAlertDialog(it.exception.toString())
+            }
+        }
+    }
+
+
+    private fun initiate_Firebase_Recycler_View_Options() {
+        recycler_view_options_profile.setHasFixedSize(true)
+        val numberOfColumns = 2
+        val mManager = GridLayoutManager(this, numberOfColumns)
+        mManager.orientation = RecyclerView.HORIZONTAL
+        recycler_view_options_profile.setLayoutManager(mManager)
+
+        options_Query.addValueEventListener(object: ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+            }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists() or  !snapshot.hasChildren()) {
+                    recycler_view_options_profile.visibility = View.GONE
+                }else {
+                    recycler_view_options_profile.visibility = View.VISIBLE
+                }
+            }
+        })
+
+        //Initialize FirebasePagingOptions
+        Constants.options_Second = DatabasePagingOptions.Builder<Options>()
+            .setLifecycleOwner(this)
+            .setQuery(options_Query, Constants.config, Options::class.java)
+            .build()
+        loadFirebaseAdapter()
+    }
+
+    private fun loadFirebaseAdapter() {
+        // Instantiate Paging Adapter
+        Constants.mAdapter_Options = object : FirebaseRecyclerPagingAdapter<Options, OptionsViewHolder>(Constants.options_Second) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionsViewHolder {
+                val view = layoutInflater.inflate(R.layout.options_display_layout, parent, false)
+                return OptionsViewHolder(view)
+            }
+
+            override fun onBindViewHolder(viewHolder: OptionsViewHolder, position: Int, options: Options) {
+                val databaseRerence = getRef(position)
+                viewHolder.bind(options, databaseRerence, viewHolder, this@YourStreams, null)
+            }
+
+            override fun onError(databaseError: DatabaseError) {
+                //makeLongToast(databaseError.toString())
+            }
+
+            override fun onLoadingStateChanged(state: LoadingState) {
+                when (state) {
+                }
+            }
+        }
+
+        recycler_view_options_profile.adapter = Constants.mAdapter_Options
+    }
+
+    private fun view_all_betters_text_Click() {
+        yourallbets.setSafeOnClickListener {
+            goToActivity_Unfinished(this, ViewAllBetters::class.java)
+        }
+    }
+
+    private fun load_Active_Stream_Information() {
+        FirebaseChecker().load_selected_Streamer_Stream(firebaseAuth.currentUser.uid) {
+            if (it.exists()) {
+                val title = it.child("title").value.toString()
+                val description = it.child("description").value.toString()
+                val cashday = it.child("cashday").value.toString()
+                val lastday = it.child("lastday").value.toString()
+                val type = it.child("type").value.toString()
+                val contribution = it.child("contribution").value.toString()
+                val numberOfBetters = ((it.child("bets").childrenCount.toInt())).toString()
+
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                val actualcashday: Date = formatter.parse(cashday)
+                val actuallastday: Date = formatter.parse(lastday)
+
+                yourdescription.setText(description)
+                youtitle.setText(title)
+                yourdue.setText("Due: $actuallastday")
+                yourpaymenton.setText("Payment $actualcashday")
+                yourbetters.setText("Betters\n$numberOfBetters")
+                yourContribution.setText("Your Bet:\nKes: $contribution")
+                yourstreamtype.setText("Type:\n$type")
+
+                total_amount_in_Stream(it.child("contribution").value.toString().toInt())
+            } else {
+                makeLongToast("You have no active Streams")
+                finish()
+            }
+        }
+    }
+
+    private fun total_amount_in_Stream(streamer_amount: Int) {
+        var theamount_list = mutableListOf<Int>()
+        FirebaseChecker().load_selected_Streamer_Bets(firebaseAuth.currentUser.uid) {
+            for (value in it.children) {
+                val amount_Placed  = value.child("bettamount").value.toString().toInt()
+                theamount_list.add(amount_Placed)
+            }
+            val final_amount = (theamount_list.sum() + streamer_amount).toString()
+            yourstreamamounttotal.setText("Stream Total\nKes: $final_amount")
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Constants.mAdapter_Options.startListening()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Constants.mAdapter_Options.stopListening()
+    }
+
+}

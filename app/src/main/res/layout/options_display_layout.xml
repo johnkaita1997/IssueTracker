@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="20dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginHorizontal="23dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:weightSum="2"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:textSize="13dp"
+            android:textColor="@color/black"
+            android:background="@color/white"
+            android:layout_weight=".6"
+            android:text="The Option Value"
+            android:id="@+id/options_display_Value"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"/>
+
+
+        <Button
+            android:textSize="13dp"
+            android:layout_weight="1.4"
+            android:id="@+id/options_display_name"
+            android:layout_width="match_parent"
+            android:text="Option Name:"
+            android:layout_height="40dp"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

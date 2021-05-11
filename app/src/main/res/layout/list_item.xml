@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="5dp"
+    android:layout_marginTop="20dp"
+    android:elevation="20dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:paddingHorizontal="2dp"
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:weightSum="2">
+
+        <TextView
+            android:textColor="@color/black"
+            android:id="@+id/mambo_betstate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Bet State"
+            android:textSize="14dp" />
+
+        <LinearLayout
+            android:paddingVertical="10dp"
+            android:id="@+id/welllayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/mambo_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".6"
+                android:background="@color/white"
+                android:layout_gravity="center"
+                android:text="The Tittle"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+
+            <TextView
+                android:id="@+id/mambo_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.4"
+                android:textColor="@color/mainicolor"
+                android:text="Amount Placed"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/mainicolor" />
+
+        <LinearLayout
+            android:paddingVertical="10dp"
+            android:id="@+id/welllayosdfghsdfgut"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/mambo_datePlaced"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight=".6"
+                android:background="@color/white"
+                android:layout_gravity="center"
+                android:text="Date Placed"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+
+            <TextView
+                android:id="@+id/mambo_option_Chose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.4"
+                android:textColor="@color/mainicolor"
+                android:text="Option"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/mambo_ShowBetters_Button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="View Betters"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/mainicolor" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

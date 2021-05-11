@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:ignore="MissingDefaultResource">
+
+    <TextView
+        android:textSize="15dp"
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="13dp"
+        android:gravity="center_horizontal"
+        android:text="Stream"
+        android:textColor="@color/black">
+
+    </TextView>
+
+    <TextView
+        android:layout_marginBottom="10dp"
+        android:text="Enter your Stream email below"
+        android:textColor="@color/black"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </TextView>
+
+    <EditText
+        android:id="@+id/forgot_email_editText"
+        android:hint="Your Email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:ems="10" />
+
+    <Button
+        style="@style/loginButton"
+        android:id="@+id/recover_Email_Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Proceed" />
+</LinearLayout>

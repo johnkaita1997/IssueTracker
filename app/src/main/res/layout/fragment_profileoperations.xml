@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.Normal.HomeActivity">
+
+    <TextView
+        android:id="@+id/button2"
+        android:textColor="@color/mainicolor"
+        android:layout_marginTop="90dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="15.5dp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Select An Option" />
+
+    <ListView
+        android:paddingTop="10dp"
+        android:id="@+id/list"
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.573"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </ListView>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:textAllCaps="false"
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Logout"/>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

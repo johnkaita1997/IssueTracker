@@ -1,10 +1,18 @@
 <resources>
-    <string name="app_name">Issue Tracker Github</string>
+    <string name="app_name">Stream</string>
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_email_hint">Email</string>
+
+    <string name="facebook_app_id">746469249350379</string>
+    <string name="fb_login_protocol_scheme">fb746469249350379</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="already_have_an_account"><u>Already have an account?</u></string>
+    <string name="view_all_bets"><u>View all bets</u></string>
 
     <string-array name="numbers">
         <item>Nil</item>
