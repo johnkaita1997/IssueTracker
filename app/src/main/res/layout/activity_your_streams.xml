@@ -304,13 +304,29 @@
                         android:textColor="@color/black" />
 
                     <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                        android:id="@+id/shareStream"
+                        style="@style/loginButton"
+                        android:layout_width="300dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_horizontal"
+                        android:paddingTop="2dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="4dp"
+                        android:text="Share Stream"
+                        app:initialCornerAngle="27dp"
+                        app:spinning_bar_padding="6dp"
+                        app:spinning_bar_width="4dp" />
+
+                    <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                         android:id="@+id/yourclosestream"
                         style="@style/loginButton"
                         android:layout_width="380dp"
+                        android:backgroundTint="@color/black"
                         android:layout_height="40dp"
                         android:layout_gravity="center_horizontal"
                         android:paddingTop="20dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/white"
                         android:layout_marginBottom="40dp"
                         android:text="Close Stream"
                         app:initialCornerAngle="27dp"

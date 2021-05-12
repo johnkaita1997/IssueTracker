@@ -52,6 +52,5 @@ object Constants {
     var googleSignInClient: GoogleSignInClient? = null
     const val ONESIGNAL_APP_ID = "52a2c790-173c-4606-a0a6-941f3b4d58eb"
     lateinit var alertDialog: AlertDialog
-    val CONSUMER_KEY = "Y90mSUTSFGqCIIvzCUNHXFiOvdGIGE52"
-    val CONSUMER_SECRET = "Are4NZyFAHSF2E55"
+
 }

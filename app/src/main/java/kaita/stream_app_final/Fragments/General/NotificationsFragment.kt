@@ -144,6 +144,7 @@ class NotificationsFragment : Fragment() {
             complain_HashMap["name"] = name
             complain_HashMap["mobile"] = mobile
             complain_HashMap["email"] = email
+            complain_HashMap["complain"] = thecomplaint
 
             FirebaseDatabase.getInstance().getReference().child("complains").child(firebaseAuth.currentUser.uid).push().setValue(complain_HashMap).addOnCompleteListener {
                 if (it.isSuccessful) {

@@ -214,8 +214,6 @@ class EndBet_ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
                                                                                                             Log.d( "MAMBO","KUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU: $combined")
 
-                                                                                                            people_List.add(combined)
-
                                                                                                             Log.d("Mr Kaita", "onDataChange: Found stamp two $stampTwo")
 
                                                                                                             if (stampOne.equals(stampTwo)) {
@@ -227,15 +225,35 @@ class EndBet_ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                                                                                                     .setValue("Closed")
                                                                                                                     .addOnCompleteListener {
                                                                                                                         if (it.isComplete) {
-                                                                                                                            Log.d("Mr Kaita", "Done")
+                                                                                                                            var win_or_lose = ""
+                                                                                                                            var right_answer = correct_anser
                                                                                                                             if (!hechose.equals(correct_anser)) {
                                                                                                                                 sendNotification(key.toString(), "You lost:       Bet: $tittle")
+                                                                                                                                win_or_lose = "Lost"
+
                                                                                                                             } else {
                                                                                                                                 sendNotification(key.toString(), "You Won:      Bet: $tittle,    Stream will contact you for payment.")
+                                                                                                                                win_or_lose = "Won"
                                                                                                                             }
 
+                                                                                                                            val moneyMap = HashMap<String, Any>()
+                                                                                                                            moneyMap["Host: Name"] = host_end_name
+                                                                                                                            moneyMap["Host Mobile"] = host_end_mobile
+                                                                                                                            moneyMap["Host Email"] = host_end_email
+                                                                                                                            moneyMap["Role"] = "Host"
+                                                                                                                            moneyMap["Better Name"] = end_name
+                                                                                                                            moneyMap["Beetter Mobile"] = end_mobile
+                                                                                                                            moneyMap["Better Email"] = end_email
+                                                                                                                            moneyMap["Better Amount"] = end_bettamount
+                                                                                                                            moneyMap["Better  Choice"] = end_bettchoice
+                                                                                                                            moneyMap["Better role"] = "Regular"
+                                                                                                                            moneyMap["Won or Lost"] = win_or_lose
+                                                                                                                            moneyMap["Correct Answer"] = correct_anser
+
+                                                                                                                            FirebaseDatabase.getInstance().reference.child("money").child(hostid).push().setValue(moneyMap)
+
                                                                                                                             FirebaseChecker().homeRef_Streams.child(
-                                                                                                                                Constants.firebaseAuth.currentUser.uid).removeValue().addOnCompleteListener {
+                                                                                                                                hostid).removeValue().addOnCompleteListener {
                                                                                                                                 if (it.isSuccessful) {
                                                                                                                                     FirebaseDatabase.getInstance().getReference().child("manage").child(
                                                                                                                                         selected_id).removeValue().addOnCompleteListener {
@@ -276,10 +294,10 @@ class EndBet_ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                                                 }
                                                             )
                                                         }
-                                                        send_Email(people_List, theactivity)
                                                     }
                                                 })
                                             }
+                                            send_Email(people_List, theactivity)
                                         }
                                     })
                                 }
@@ -291,16 +309,6 @@ class EndBet_ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
     }
 
     private fun send_Email(peopleList: MutableList<String>,theactivity: FragmentActivity) {
-        var string = ""
-        peopleList.forEachIndexed { index, value ->
-            string = string + "\n" + index
-        }
-        FirebaseDatabase.getInstance().reference.child("money").push().setValue(string).addOnCompleteListener {
-            if (it.isSuccessful) {
-                theactivity.showAlertDialog("Task was successful")
-            } else {
-                theactivity.makeLongToast(it.exception.toString())
-            }
-        }
+        theactivity.showAlertDialog("Operation was completed")
     }
 }

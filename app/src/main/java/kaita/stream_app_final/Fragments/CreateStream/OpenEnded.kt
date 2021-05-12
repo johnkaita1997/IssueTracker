@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,13 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
+import com.facebook.share.Sharer
+import com.facebook.share.model.ShareLinkContent
+import com.facebook.share.widget.ShareDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -38,6 +46,8 @@ class OpenEnded : Fragment() {
     private lateinit var source: View
     val hashMap_Stream_Options = HashMap<String, Any>()
     val hashmap_Abcd = HashMap<String, Any>()
+    lateinit var callbackManager: CallbackManager
+    lateinit var shareDialog: ShareDialog
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,6 +61,8 @@ class OpenEnded : Fragment() {
     }
 
     private fun initall() {
+
+        initialize_Facebook()
 
         progressDialog = SpotsDialog.Builder().setContext(requireContext()).build() as SpotsDialog
 
@@ -105,7 +117,7 @@ class OpenEnded : Fragment() {
                             hashMap_Stream_Options["cashday"] = cash_day
                             hashMap_Stream_Options["paid"] = "paid"
                             hashMap_Stream_Options["open"] = "open"
-                            hashMap_Stream_Options["contribution"] = "500"
+                            hashMap_Stream_Options["contribution"] = "0"
                             hashMap_Stream_Options["type"] = "Open"
                             hashMap_Stream_Options["host"] = Constants.firebaseAuth.currentUser.uid
                             hashMap_Stream_Options["maxoptions"] = number_Picker_max_Options.value.toString().trim()
@@ -134,6 +146,12 @@ class OpenEnded : Fragment() {
         }
 
         listener_For_A()
+    }
+
+    private fun initialize_Facebook() {
+        FacebookSdk.sdkInitialize(requireActivity())
+        callbackManager = CallbackManager.Factory.create()
+        shareDialog = ShareDialog(this)
     }
 
     private fun checkWhetherToSharePublicly_Or_Privately() {
@@ -260,10 +278,40 @@ class OpenEnded : Fragment() {
                         requireActivity().makeLongToast("Important information missing")
                     }
                 }
+                dialog.dismiss()
             })
-        builder.setNegativeButton("Cancel", null)
+        builder.setNegativeButton("Facebook",
+            DialogInterface.OnClickListener { dialog, which ->
+                shareDialog.registerCallback(callbackManager, object :
+                    FacebookCallback<Sharer.Result> {
+                    override fun onSuccess(result: Sharer.Result?) {
+                        requireActivity().makeLongToast("Your Stream was shared to Facebook")
+                    }
+                    override fun onCancel() {
+                        requireActivity().makeLongToast("Sharing Cancelled")
+                    }
+                    override fun onError(error: FacebookException?) {
+                        requireActivity().makeLongToast(error?.message.toString())
+                    }
+                })
+
+                val linkContent = ShareLinkContent.Builder()
+                    .setQuote("Facebook Share API Test Link - Random")
+                    //.setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${firebaseAuth.currentUser.uid}"))
+                    .setContentUrl(Uri.parse("https://www.google.com/"))
+                    .build()
+
+                if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                    shareDialog.show(linkContent)
+                } else {
+                    requireActivity().makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                }
+                dialog.dismiss()
+            })
+        builder.setNeutralButton("Dismiss", null)
         // Create and show the alert dialog
         val dialog: AlertDialog = builder.create()
         dialog.show()
+
     }
 }

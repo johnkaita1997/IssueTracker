@@ -153,36 +153,37 @@ class BottomHomeFragment : Fragment() {
 
     private fun load_Other_Features() {
         FirebaseChecker().load_selected_Streamer_Stream(selected_id){
-            val description = it.child("description").value.toString()
-            val cashday = it.child("cashday").value.toString()
-            val lastday = it.child("lastday").value.toString()
-            val joinnumber = it.child("joinnumber").value.toString()
-            val dpurl = it.child("dpurl").value.toString()
-            val hostname = it.child("hostname").value.toString()
-            val paid = it.child("paid").value.toString()
-            val type = it.child("type").value.toString()
-            val open: String = it.child("open:").value.toString()
+            if (it.exists() and it.hasChildren()) {
+                val description = it.child("description").value.toString()
+                val cashday = it.child("cashday").value.toString()
+                val lastday = it.child("lastday").value.toString()
+                val joinnumber = it.child("joinnumber").value.toString()
+                val dpurl = it.child("dpurl").value.toString()
+                val hostname = it.child("hostname").value.toString()
+                val paid = it.child("paid").value.toString()
+                val type = it.child("type").value.toString()
+                val open: String = it.child("open:").value.toString()
 
-            Log.d("ISSUE", lastday)
+                Log.d("ISSUE", lastday)
 
-            //Get date and time from lastday
-            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            val final_last_day: Date = formatter.parse(lastday)
-            val final_cash_day: Date = formatter.parse(cashday)
+                //Get date and time from lastday
+                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                val final_last_day: Date = formatter.parse(lastday)
+                val final_cash_day: Date = formatter.parse(cashday)
 
-            source.bottom_actual_Description.setText(description)
+                source.bottom_actual_Description.setText(description)
 
-            source.bottom_due_on.setText("Bet Expiry: $final_last_day")
-            source.bottom_payment_on_text.setText("Cash Day $final_cash_day")
+                source.bottom_due_on.setText("Bet Expiry: $final_last_day")
+                source.bottom_payment_on_text.setText("Cash Day $final_cash_day")
 
-            if (type == "Closed") {
-                source.bottom_type.setText("Type: Closed - You can't add a betting option")
-                source.close_B.visibility == View.GONE
-            } else if(type == "Open"){
-                source.bottom_type.setText("Type: Open - Enter your bet")
+                if (type == "Closed") {
+                    source.bottom_type.setText("Type: Closed - You can't add a betting option")
+                    source.close_B.visibility == View.GONE
+                } else if (type == "Open") {
+                    source.bottom_type.setText("Type: Open - Enter your bet")
+                }
+                remove_Layout_If_Closed_Or_Open()
             }
-
-            remove_Layout_If_Closed_Or_Open()
         }
     }
 

@@ -29,6 +29,7 @@ import kaita.stream_app_final.Adapteres.Model
 import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
 import kaita.stream_app_final.AppConstants.Constants.loaded
+import kaita.stream_app_final.AppConstants.Constants.selected_id
 import kaita.stream_app_final.Extensions.goToActivity
 import kaita.stream_app_final.Extensions.goToActivity_Unfinished
 import kaita.stream_app_final.Extensions.showAlertDialog
@@ -37,6 +38,7 @@ import kaita.stream_app_final.Fragments.General.NotificationsFragment
 import kaita.stream_app_final.Fragments.General.ProfileFragment
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.end_bet_viewholder_layout.*
 import kotlinx.android.synthetic.main.layout_bottom_navigation_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,22 +99,38 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
 
         val uri: Uri? = intent.data
         if (uri != null) {
-            val path: String = uri.toString()
-            val identy = uri.getQueryParameter("id")
-            val selected_id = identy
-            val bottomSheet = BottomSheetDialogContainer()
-            val metrics = DisplayMetrics()
+            try {
+                val path: String = uri.toString()
+                val ident = uri.getQueryParameter("id")
 
-            val bundle = Bundle()
-            bundle.putString("key", selected_id)
-            bottomSheet.arguments = bundle
+                var theid = path.substring(path.lastIndexOf("=") + 1)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                windowManager?.defaultDisplay?.getMetrics(metrics)
-                if (loaded == false) {
-                    bottomSheet.show(supportFragmentManager, selected_id)
-                    loaded = true
+                FirebaseChecker().load_selected_Streamer_Stream(theid){
+                    if (it.exists() && it.hasChildren()) {
+
+                        selected_id = theid
+                        val bottomSheet = BottomSheetDialogContainer()
+                        val metrics = DisplayMetrics()
+
+                        val bundle = Bundle()
+                        bundle.putString("key", selected_id)
+                        bottomSheet.arguments = bundle
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            windowManager?.defaultDisplay?.getMetrics(metrics)
+                            if (loaded == false) {
+                                bottomSheet.show(supportFragmentManager, selected_id)
+                                loaded = true
+                            }
+                        }
+
+                    } else {
+                        showAlertDialog("This Stream is either closed or is pending")
+                    }
                 }
+
+            } catch (e: Exception) {
+                showAlertDialog("This Stream is either closed or is pending.\n${e.message}")
             }
 
         } else {

@@ -31,6 +31,7 @@ import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 
 class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
@@ -188,6 +189,7 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                                                                 hashMap_Selected_Bet_By_Better["bettamount"] = bettamount
                                                                                 hashMap_Selected_Bet_By_Better["bettdate"] = currentDate
                                                                                 hashMap_Selected_Bet_By_Better["bettstate"] = "Open"
+                                                                                hashMap_Selected_Bet_By_Better["bettername"] = bettername
 
                                                                                 if (user_Option != "") {
                                                                                     //Check for the maximum number of available options for this application
@@ -312,63 +314,118 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     private fun make_Mpesa_Request(theactivity: FragmentActivity, source: View, bettamount: String, bettername: String, bettermobile: String) {
 
-        val busienessShortcode = "174379"
-        val mobileNumber = bettermobile
-        val partyA = mobileNumber
-        val partyB = busienessShortcode
-        val callback = "https://worldstream.co.ke/streamed/confirmation.php?id=${firebaseAuth.currentUser.uid}"
-        val accountReference = "$thebettername"
-        val transactionDesc = "Bid-Placed"
-        val amount = bettamount
-        val passkey = "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919"
-
-        val lnmExpress = LNMExpress(
-            busienessShortcode,
-            passkey,
-            amount,
-            partyA,
-            partyB,
-            mobileNumber,
-            callback,
-            accountReference,
-            transactionDesc
-        )
-
-        daraja.requestMPESAExpress(lnmExpress,   object : DarajaListener<LNMResult> {
-            override fun onResult(lnmResult: LNMResult) {
-                theactivity.showAlertDialog(lnmResult.ResponseDescription.toString())
+        FirebaseDatabase.getInstance().reference.child("credentials").addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                theactivity.makeLongToast(error.message)
             }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    if (snapshot.child("busienessshortcode").exists() && snapshot.child("passkey").exists()&& snapshot.child("callback").exists()) {
 
-            override fun onError(error: String) {
-                theactivity.showAlertDialog("Mpesa Failed: ${error}")
-                Log.d("Pesa", "onError: $error")
-                if (progressDialog.isShowing) {progressDialog.dismiss()}
+                        val busienessshortcode = snapshot.child("busienessshortcode").value.toString()
+                        val thepasskey = snapshot.child("passkey").value.toString()
+                        val thecallback = snapshot.child("callback").value.toString()
+
+                        val busienessShortcode = busienessshortcode
+                        val mobileNumber = bettermobile
+                        val partyA = mobileNumber
+                        val partyB = busienessShortcode
+                        val callback = "https://worldstream.co.ke/streamed/confirmation.php?id=${firebaseAuth.currentUser.uid}"
+                        val accountReference = "$bettername"
+                        val transactionDesc = "Bid-Placed"
+                        val amount = bettamount
+                        val passkey = thepasskey
+
+                        val lnmExpress = LNMExpress(
+                            busienessShortcode,
+                            passkey,
+                            amount,
+                            partyA,
+                            partyB,
+                            mobileNumber,
+                            callback,
+                            accountReference,
+                            transactionDesc
+                        )
+
+                        daraja.requestMPESAExpress(lnmExpress, object : DarajaListener<LNMResult> {
+                            override fun onResult(lnmResult: LNMResult) {
+                                theactivity.showAlertDialog("You will receive an Mpesa prompt shortly")
+                            }
+
+                            override fun onError(error: String) {
+                                theactivity.showAlertDialog("Mpesa Failed: ${error}")
+                                Log.d("Pesa", "onError: $error")
+                                if (progressDialog.isShowing) {
+                                    progressDialog.dismiss()
+                                }
+                            }
+                        }
+                        )
+
+                    }else {
+                        theactivity.makeLongToast("Admin info missing")
+                    }
+
+                    val currentTimestamp = System.currentTimeMillis()
+                    val c = Calendar.getInstance().time
+                    println("Current time => $c")
+                    val df = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
+                    val formattedDate = df.format(c)
+                    val paymentList = HashMap<String, Any>()
+                    paymentList["name"] = bettername
+                    paymentList["amount"] = bettamount
+                    paymentList["mobile"] = bettermobile
+                    paymentList["datemade"] = formattedDate
+                    //Expectation
+                    FirebaseDatabase.getInstance().reference.child("expectingpayment").child(currentTimestamp.toString()).setValue(paymentList)
+                    FirebaseDatabase.getInstance().reference.child("expectingpayment").child(currentTimestamp.toString()).push().setValue(hashMap_Selected_Bet_By_Better)
+
+                } else {
+                    theactivity.makeLongToast("Admin info missing")
+                }
             }
-        }
-        )
+        })
     }
 
     private fun initiate_Daraje(theactivity: FragmentActivity,source: View?) {
-        daraja = Daraja.with(
-            Constants.CONSUMER_KEY,
-            Constants.CONSUMER_SECRET,
-            object : DarajaListener<AccessToken> {
-                override fun onResult(@NonNull accessToken: AccessToken) {
-                    if (theactivity != null) {
-                        theactivity.makeLongToast("Gotten TokenP: ${accessToken.access_token}")
-                    }
-                }
 
-                override fun onError(error: String) {
-                    if (theactivity != null) {
-                        theactivity.makeLongToast(error)
+        FirebaseDatabase.getInstance().reference.child("credentials").addListenerForSingleValueEvent(object : ValueEventListener{
+            override fun onCancelled(error: DatabaseError) {
+                theactivity.makeLongToast(error.message)
+            }
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists() && snapshot.hasChildren()) {
+                    if (snapshot.child("consumerkey").exists() && snapshot.child("consumersecret").exists()) {
+
+                        val consumerkey = snapshot.child("consumerkey").value.toString()
+                        val consumersecret = snapshot.child("consumersecret").value.toString()
+
+                        daraja = Daraja.with(
+                            consumerkey,
+                            consumersecret,
+                            object : DarajaListener<AccessToken> {
+                                override fun onResult(@NonNull accessToken: AccessToken) {
+                                    if (theactivity != null) {
+                                        theactivity.makeLongToast("Gotten TokenP: ${accessToken.access_token}")
+                                    }
+                                }
+
+                                override fun onError(error: String) {
+                                    if (theactivity != null) {
+                                        theactivity.makeLongToast(error)
+                                    }
+                                }
+                            })
                     }
+                } else {
+                    theactivity.makeLongToast("Unable to set up Mpesa")
                 }
-            })
+            }
+        })
     }
 
     private fun start_Listener_For_Payment(theactivity: FragmentActivity,source: View? ) {
-
         if (valueListener == null) {
             val reference = FirebaseDatabase.getInstance().reference.child("users").child(firebaseAuth.currentUser.uid).child("betPay")
             valueListener = reference.addValueEventListener(object : ValueEventListener{
@@ -382,19 +439,28 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                     if (it.isSuccessful) {
                                         FirebaseDatabase.getInstance().getReference().child("bets").child(
                                             firebaseAuth.currentUser.uid).push().setValue(
-                                            hashMap_Selected_Bet_By_Better)
+                                            hashMap_Selected_Bet_By_Better).addOnCompleteListener {
+                                            if (it.isSuccessful) {
+                                                if (progressDialog.isShowing) {progressDialog.dismiss()}
+                                                theactivity.showAlertDialog("Your bet was placed")
+                                                chosen_Answer = ""
+                                                sendNotification(selected_id, "Joined Bet:     Name: ${thebettername},        Amount: Kes ${thebettamount}")
 
-                                        if (progressDialog.isShowing) {progressDialog.dismiss()}
-                                        theactivity.showAlertDialog("Your bet was placed")
-                                        chosen_Answer = ""
-                                        sendNotification(selected_id, "Joined Bet:     Name: ${thebettername},        Amount: Kes ${thebettamount}")
-                                        hashMap_Selected_Bet_By_Better.clear()
-                                        place_your_bet_open_edt?.setText("")
+                                                hashMap_Selected_Bet_By_Better.clear()
+                                                place_your_bet_open_edt?.setText("")
 
-                                        val reference = FirebaseDatabase.getInstance().reference.child("users").child(firebaseAuth.currentUser.uid).child("betPay")
-                                        valueListener?.let { it1 -> reference.removeEventListener(it1) }
-                                        reference.removeValue()
+                                                val reference = FirebaseDatabase.getInstance().reference.child("users").child(firebaseAuth.currentUser.uid).child("betPay")
+                                                valueListener?.let { it1 -> reference.removeEventListener(it1) }
+                                                reference.removeValue()
 
+                                                if (selected_id.equals(firebaseAuth.currentUser.uid.toString())) {
+                                                    FirebaseDatabase.getInstance().reference.child("streams").child(selected_id).child("contribution").setValue(thebettamount)
+                                                }
+
+                                            } else {
+                                                theactivity.makeLongToast("An error occured")
+                                            }
+                                        }
                                     } else {
                                         theactivity.showAlertDialog("Failed to place bet, ${it.exception.toString()}")
                                         hashMap_Selected_Bet_By_Better.clear()

@@ -1,11 +1,24 @@
 package kaita.stream_app_final.Activities.ProfileOperations
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.facebook.CallbackManager
+import com.facebook.FacebookCallback
+import com.facebook.FacebookException
+import com.facebook.FacebookSdk
+import com.facebook.share.Sharer
+import com.facebook.share.model.ShareLinkContent
+import com.facebook.share.widget.ShareDialog
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -32,6 +45,8 @@ import java.util.*
 class YourStreams : AppCompatActivity() {
 
     val options_Query = FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("options")
+    lateinit var callbackManager: CallbackManager
+    lateinit var shareDialog: ShareDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,10 +55,87 @@ class YourStreams : AppCompatActivity() {
     }
 
     private fun initall() {
+        initialize_Facebook()
         load_Active_Stream_Information()
         view_all_betters_text_Click()
         initiate_Firebase_Recycler_View_Options()
         listenerForCloseStream()
+        shareStream.setOnClickListener {
+            // Set up the alert builder
+            val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            builder.setTitle("How do you want to share this to your friends?")
+            builder.setPositiveButton("Whatsapp",
+                DialogInterface.OnClickListener { dialog, which ->
+                    FirebaseChecker().load_selected_Streamer_Stream(Constants.firebaseAuth.currentUser.uid){
+                        if (it.exists()) {
+
+                            var strAppLink = ""
+                            val appPackageName = getPackageName();
+                            strAppLink = try {
+                                "https://play.google.com/store/apps/details?id=$appPackageName"
+                            } catch (anfe: ActivityNotFoundException) {
+                                "https://play.google.com/store/apps/details?id=$appPackageName"
+                            }
+
+                            val title = it.child("title").value.toString()
+                            val mybet = it.child("contribution").value.toString()
+
+                            var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${Constants.firebaseAuth.currentUser.uid}"
+
+                            val a = Intent(Intent.ACTION_SEND)
+                            // this is the sharing part
+                            a.type = "text/link"
+                            val shareBody = bettmessage.trimIndent()
+                            val shareSub = "Stream Bet"
+                            a.putExtra(Intent.EXTRA_SUBJECT, shareSub)
+                            a.putExtra(Intent.EXTRA_TEXT, shareBody)
+                            startActivity(Intent.createChooser(a, "Share Using"))
+
+                        } else {
+                            makeLongToast("Important information missing")
+                        }
+                    }
+                    dialog.dismiss()
+                })
+            builder.setNegativeButton("Facebook",
+                DialogInterface.OnClickListener { dialog, which ->
+                    shareDialog.registerCallback(callbackManager, object :
+                        FacebookCallback<Sharer.Result> {
+                        override fun onSuccess(result: Sharer.Result?) {
+                            makeLongToast("Your Stream was shared to Facebook")
+                        }
+                        override fun onCancel() {
+                            makeLongToast("Sharing Cancelled")
+                        }
+                        override fun onError(error: FacebookException?) {
+                            makeLongToast(error?.message.toString())
+                        }
+                    })
+
+                    val linkContent = ShareLinkContent.Builder()
+                        .setQuote("Facebook Share API Test Link - Random")
+                        //.setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${firebaseAuth.currentUser.uid}"))
+                        .setContentUrl(Uri.parse("https://www.google.com/"))
+                        .build()
+
+                    if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                        shareDialog.show(linkContent)
+                    } else {
+                        makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                    }
+                    dialog.dismiss()
+                })
+            builder.setNeutralButton("Dismiss", null)
+            // Create and show the alert dialog
+            val dialog = builder.create()
+            dialog.show()
+        }
+    }
+
+    private fun initialize_Facebook() {
+        FacebookSdk.sdkInitialize(this)
+        callbackManager = CallbackManager.Factory.create()
+        shareDialog = ShareDialog(this)
     }
 
     private fun listenerForCloseStream() {
