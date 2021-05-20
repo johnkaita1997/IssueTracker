@@ -1,3 +1,4 @@
+/*
 package kaita.stream_app_final.Activities
 
 import android.widget.ListView
@@ -41,3 +42,4 @@ public class MainActivityTest_Instrumented {
     }
 
 }
+*/

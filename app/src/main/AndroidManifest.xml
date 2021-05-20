@@ -2,23 +2,42 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="kaita.stream_app_final">
 
-    <uses-permission        android:name="android.permission.INTERNET"                   android:required="false" />
-    <uses-permission    android:name="android.permission.READ_EXTERNAL_STORAGE"      android:required="false" />
-    <uses-permission    android:name="android.permission.ACCESS_NETWORK_STATE"      android:required="false" />
-    <uses-permission    android:name="android.permission.ACCESS_COARSE_LOCATION"      android:required="false" />
-    <uses-permission    android:name="android.permission.ACCESS_FINE_LOCATION"      android:required="false" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        android:required="false" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:required="false" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        android:required="false" />
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:required="false" />
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:required="false" />
 
     <application
+        android:name=".ApplicationClass"
         android:allowBackup="true"
         android:icon="@mipmap/mainiconed"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:roundIcon="@mipmap/mainiconed_round"
         android:supportsRtl="true"
-        android:name=".ApplicationClass"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".Activities.ProfileOperations.ActivityForViewingAllTheBetters"></activity>
+        <activity android:name=".Activities.Normal.LearnHowItWorks"></activity>
+        <activity android:name=".Activities.Admin.DeleteReturn" />
+        <activity android:name=".Activities.Admin.ContributionsActivity" />
+        <activity android:name=".Activities.Admin.MoneyActivity" />
+        <activity android:name=".Activities.Admin.ExpectingPaymentActivity" />
+        <activity android:name=".Activities.Admin.Complains" />
+        <activity android:name=".Activities.ProfileOperations.ShowStreamList" />
+        <activity android:name=".Activities.Normal.SearchActivity" />
+        <activity android:name=".Activities.ProfileOperations.ActivityForViewingAllTheBetters" />
         <activity android:name=".Activities.ProfileOperations.ParticipateBets" />
         <activity android:name=".Activities.ProfileOperations.ViewAllBetters" />
         <activity android:name=".Activities.ProfileOperations.YourStreams" />
@@ -26,20 +45,20 @@
         <activity
             android:name=".Activities.Normal.PostActivity"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".Activities.Normal.MainActivity"
             android:windowSoftInputMode="adjustPan">
-
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"></action>
-                <category android:name="android.intent.category.DEFAULT"></category>
-                <category android:name="android.intent.category.BROWSABLE"></category>
-                <data android:host="www.worldstream.co.ke" android:scheme="https"></data>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="www.worldstream.co.ke"
+                    android:scheme="https" />
             </intent-filter>
-
         </activity>
-
         <activity android:name=".Activities.Normal.HomeActivity" />
         <activity
             android:name=".Activities.Authentication.LoginActivity"
@@ -52,6 +71,7 @@
         <activity android:name=".Activities.Launcher.OneLauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

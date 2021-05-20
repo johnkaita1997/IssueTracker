@@ -16,10 +16,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.DoubleBounce
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import kaita.stream_app_final.Activities.Normal.LearnHowItWorks
 import kaita.stream_app_final.Activities.Normal.MainActivity
 import kaita.stream_app_final.Adapteres.ConnectionDetector
 import kaita.stream_app_final.AppConstants.Constants.permission_request
 import kaita.stream_app_final.Extensions.goToActivity
+import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_one_launcher.*
 
@@ -28,20 +34,22 @@ class OneLauncherActivity : AppCompatActivity() {
     var cd = ConnectionDetector(this)
     private lateinit var progressBar: ProgressBar
     public var doubleBounce: Sprite = DoubleBounce()
+    lateinit var handler: Handler
+    lateinit var runnable: Runnable
+    var stop = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_one_launcher)
-
         //Hide the action bar
         getSupportActionBar()?.hide()
-
         initall()
-
     }
 
     private fun initall() {
-
+        handler = Handler()
+        learn_how_it_works_Listener()
         progressBar = progresssec
         progressBar.indeterminateDrawable = doubleBounce
         progressBar.setVisibility(View.VISIBLE)
@@ -53,6 +61,31 @@ class OneLauncherActivity : AppCompatActivity() {
             ),
             permission_request
         )
+
+         runnable = Runnable {
+             if (stop != true) {
+                 goToActivity(this, MainActivity::class.java)
+             }
+        }
+    }
+
+    private fun learn_how_it_works_Listener() {
+        learn_How_It_Works.setOnClickListener {
+            FirebaseDatabase.getInstance().reference.child("credentials").child("lock").addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onCancelled(error: DatabaseError) {
+                    makeLongToast("Error: ${error.message}")
+                }
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        makeLongToast("Not Verified")
+                    } else {
+                        handler.removeCallbacks(runnable);
+                        stop = true
+                        goToActivity(this@OneLauncherActivity, LearnHowItWorks::class.java)
+                    }
+                }
+            })
+        }
     }
 
 
@@ -84,10 +117,18 @@ class OneLauncherActivity : AppCompatActivity() {
     }
 
     fun gotonextpage() {
-        //User is logged in
-        Handler().postDelayed({ //Go to the login activity
-            goToActivity(this, MainActivity::class.java)
-        }, 1000)
+        FirebaseDatabase.getInstance().reference.child("credentials").child("lock").addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onCancelled(error: DatabaseError) {
+                        makeLongToast("Error: ${error.message}")
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists()) {
+                            makeLongToast("Not Verified")
+                        } else {
+                            handler.postDelayed(runnable, 4000)
+                        }
+                    }
+                })
     }
 
     override fun onRequestPermissionsResult(

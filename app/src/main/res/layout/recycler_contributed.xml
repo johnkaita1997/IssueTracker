@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="7dp"
+    android:layout_marginTop="10dp"
+    android:elevation="20dp"
+    app:cardCornerRadius="30dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="3dp">
+
+
+        <LinearLayout
+            android:id="@+id/linearLadfyout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingHorizontal="3dp">
+
+            <LinearLayout
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:paddingVertical="2dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:layout_marginTop="10dp"
+                            android:layout_gravity="center"
+                            android:id="@+id/z_better_mobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Beetter Mobile"
+                            android:textColor="@color/mainicolor"
+                            android:textSize="13dp" />
+
+                        <TextView
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:id="@+id/e_streamoption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Stream Option"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+                        <TextView
+                            android:id="@+id/e_bettamount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Amount"
+                            android:textColor="@color/mainicolor"
+                            android:textSize="13dp" />
+
+
+                        <TextView
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:id="@+id/e_bettdate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bet Date"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+                        <TextView
+                            android:id="@+id/e_betteremail"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Bet Email"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+                        <TextView
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:id="@+id/e_betterid"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bet Id"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+                        <TextView
+                            android:id="@+id/e_betteridnumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Beter Id Number"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+
+                        <TextView
+                            android:id="@+id/e_bettermobile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Better Mobile"
+                            android:textColor="@color/mainicolor"
+                            android:textSize="13dp" />
+
+
+
+                        <TextView
+                            android:id="@+id/e_betttittle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Bet Tittle"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+
+                        <TextView
+                            android:id="@+id/e_stamp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="1dp"
+                            android:text="Stamp"
+                            android:textColor="@color/black"
+                            android:textSize="13dp" />
+
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

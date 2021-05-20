@@ -39,6 +39,8 @@ class ViewAllBetters : AppCompatActivity() {
         recycler_view_BetsAllu.setHasFixedSize(true)
         val mManager = WrappingRecyclerViewLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         //mManager.setOrientation(RecyclerView.HORIZONTAL)
+        mManager.isAutoMeasureEnabled = false
+        recycler_view_BetsAllu.isEnabled = false
         recycler_view_BetsAllu.setLayoutManager(mManager)
 
 

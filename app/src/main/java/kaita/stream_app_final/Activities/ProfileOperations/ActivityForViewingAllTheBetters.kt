@@ -16,8 +16,10 @@ import kaita.stream_app_final.Adapteres.BetsPlacedViewHolder
 import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Adapteres.WrappingRecyclerViewLayoutManager
 import kaita.stream_app_final.AppConstants.Constants
+import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_view_all_betters.*
+import kotlinx.android.synthetic.main.fragment_all_bets.view.*
 
 class ActivityForViewingAllTheBetters : AppCompatActivity() {
 
@@ -40,9 +42,25 @@ class ActivityForViewingAllTheBetters : AppCompatActivity() {
 
         val betsPlaced_Query = FirebaseChecker().homeRef_Streams.child(access).child("bets")
 
+        betsPlaced_Query.addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onCancelled(error: DatabaseError) {
+                        makeLongToast("Error: ${error.message}")
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists() && snapshot.hasChildren()) {
+
+                        } else {
+                            makeLongToast("This stream was closed by Streamer")
+                            finish()
+                        }
+                    }
+                })
+
         recycler_view_BetsAllu.setHasFixedSize(true)
         val mManager = WrappingRecyclerViewLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         //mManager.setOrientation(RecyclerView.HORIZONTAL)
+        mManager.isAutoMeasureEnabled = false
+        recycler_view_BetsAllu.isEnabled = false
         recycler_view_BetsAllu.setLayoutManager(mManager)
 
         betsPlaced_Query.addValueEventListener(object: ValueEventListener {

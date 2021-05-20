@@ -11,6 +11,7 @@ import androidx.annotation.NonNull
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
+import com.onesignal.OneSignal
 import com.twigafoods.daraja.Daraja
 import com.twigafoods.daraja.DarajaListener
 import com.twigafoods.daraja.model.AccessToken
@@ -85,14 +86,27 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                             theactivity.makeLongToast("Set your mobile Number in the profile page to continue")
                         } else if (!snapshot.child("email").exists()) {
                             theactivity.makeLongToast("Set your email in the profile page to continue")
-                        }else if (!snapshot.child("dpurl").exists()) {
-                            theactivity.makeLongToast("Set up your profile picture in profile page to continue")
-                        }else if (!snapshot.child("idnumber").exists()) {
-                            theactivity.makeLongToast("Set up your Id Number in profile page to continue")
                         } else {
-                            proceed()
+                            FirebaseDatabase.getInstance().reference.child("credentials").child("minimummpesaamount").addListenerForSingleValueEvent(object: ValueEventListener{
+                                override fun onCancelled(error: DatabaseError) {
+                                    theactivity.makeLongToast("Error: ${error.message}")
+                                }
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot.exists()) {
+                                        val minimum = snapshot.value.toString().toInt()
+                                        betamount = source!!.findViewById(R.id.amount_placed_for_the_bet)
+                                        var actual_bet_Amount = betamount?.text.toString().trim().toInt()
+                                        if (actual_bet_Amount < minimum) {
+                                            theactivity.showAlertDialog("Minimum amount per bet is Kes: $minimum")
+                                        } else {
+                                            proceed()
+                                        }
+                                    } else {
+                                        theactivity.makeLongToast("Minimum Amount Unset - Contact Admin")
+                                    }
+                                }
+                            })
                         }
-
                     } else {
                         theactivity.makeLongToast("Your personal profile is not set")
                     }
@@ -103,6 +117,7 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                     FirebaseDatabase.getInstance().getReference().child("streams").child(Constants.selected_id).child("lastday").addListenerForSingleValueEvent(object: ValueEventListener{
                         override fun onCancelled(error: DatabaseError) {
                             theactivity.makeLongToast("Error Occured: ${error.message.toString()}")
+                            if (progressDialog.isShowing) {progressDialog.dismiss()}
                         }
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
@@ -270,6 +285,7 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                                                                         }
                                                                                     })
                                                                                 } else {
+
                                                                                     if (hashMap_Selected_Bet_By_Better == null || hashMap_Selected_Bet_By_Better["streamoption"] == "" || hashMap_Selected_Bet_By_Better["streamoption"] == null) {
                                                                                         theactivity.showAlertDialog("You have to select at least one betting option or enter your own")
                                                                                         if (progressDialog.isShowing) {progressDialog.dismiss()}
@@ -324,13 +340,13 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
                         val busienessshortcode = snapshot.child("busienessshortcode").value.toString()
                         val thepasskey = snapshot.child("passkey").value.toString()
-                        val thecallback = snapshot.child("callback").value.toString()
+                        val call = snapshot.child("callback").value.toString()
 
                         val busienessShortcode = busienessshortcode
                         val mobileNumber = bettermobile
                         val partyA = mobileNumber
                         val partyB = busienessShortcode
-                        val callback = "https://worldstream.co.ke/streamed/confirmation.php?id=${firebaseAuth.currentUser.uid}"
+                        val callback = "$call${firebaseAuth.currentUser.uid}"
                         val accountReference = "$bettername"
                         val transactionDesc = "Bid-Placed"
                         val amount = bettamount
@@ -380,6 +396,7 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                     //Expectation
                     FirebaseDatabase.getInstance().reference.child("expectingpayment").child(currentTimestamp.toString()).setValue(paymentList)
                     FirebaseDatabase.getInstance().reference.child("expectingpayment").child(currentTimestamp.toString()).push().setValue(hashMap_Selected_Bet_By_Better)
+                    FirebaseDatabase.getInstance().reference.child("allexpectingpayment").push().setValue(hashMap_Selected_Bet_By_Better)
 
                 } else {
                     theactivity.makeLongToast("Admin info missing")
@@ -389,7 +406,6 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
     }
 
     private fun initiate_Daraje(theactivity: FragmentActivity,source: View?) {
-
         FirebaseDatabase.getInstance().reference.child("credentials").addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onCancelled(error: DatabaseError) {
                 theactivity.makeLongToast(error.message)
@@ -407,7 +423,21 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                             object : DarajaListener<AccessToken> {
                                 override fun onResult(@NonNull accessToken: AccessToken) {
                                     if (theactivity != null) {
-                                        theactivity.makeLongToast("Gotten TokenP: ${accessToken.access_token}")
+                                        FirebaseDatabase.getInstance().reference.child("credentials").child("showtokenalert").addListenerForSingleValueEvent(object: ValueEventListener{
+                                                    override fun onCancelled(error: DatabaseError) {
+                                                        theactivity.makeLongToast("Error: ${error.message}")
+                                                    }
+                                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                                        if (snapshot.exists()) {
+                                                            if (snapshot.value!!.equals("present")) {
+                                                                theactivity.makeLongToast("Gotten TokenP: ${accessToken.access_token}")
+                                                            } else {
+                                                            }
+                                                        } else {
+                                                            theactivity.makeLongToast("Error!, missing info.")
+                                                        }
+                                                    }
+                                                })
                                     }
                                 }
 
@@ -453,9 +483,24 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                                                 valueListener?.let { it1 -> reference.removeEventListener(it1) }
                                                 reference.removeValue()
 
-                                                if (selected_id.equals(firebaseAuth.currentUser.uid.toString())) {
-                                                    FirebaseDatabase.getInstance().reference.child("streams").child(selected_id).child("contribution").setValue(thebettamount)
-                                                }
+                                                FirebaseDatabase.getInstance().reference.child("keys").child(
+                                                    selected_id).addListenerForSingleValueEvent(object: ValueEventListener{
+                                                                override fun onCancelled(error: DatabaseError) {
+                                                                    theactivity.makeLongToast("Error: ${error.message}")
+                                                                }
+                                                                override fun onDataChange(snapshot: DataSnapshot) {
+                                                                    if (snapshot.exists()) {
+                                                                        val actual_id = snapshot.value.toString()
+                                                                        if (actual_id.equals(firebaseAuth.currentUser.uid.toString())) {
+                                                                            FirebaseDatabase.getInstance().reference.child("streams").child(selected_id).child("contribution").setValue(thebettamount)
+                                                                        }
+                                                                    } else {
+                                                                        theactivity.makeLongToast("Error!, missing info.")
+                                                                    }
+                                                                }
+                                                            })
+
+                                                register_To_OneSignal()
 
                                             } else {
                                                 theactivity.makeLongToast("An error occured")
@@ -476,6 +521,10 @@ class OptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                 }
             })
         }
+    }
+
+    private fun register_To_OneSignal() {
+        OneSignal.sendTag(selected_id, selected_id)
     }
 }
 

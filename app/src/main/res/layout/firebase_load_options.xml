@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="7dp"
-    android:layout_marginTop="20dp"
+    android:layout_marginTop="3dp"
     android:elevation="20dp"
     app:cardCornerRadius="30dp"
     app:cardBackgroundColor="@color/white">
@@ -118,7 +118,7 @@
             <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                 android:id="@+id/f_discover"
                 style="@style/loginButton"
-                android:layout_height="30dp"
+                android:layout_height="22dp"
                 android:layout_width="360dp"
                 android:backgroundTint="@color/grey_40"
                 android:layout_gravity="center_horizontal"

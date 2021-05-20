@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="7dp"
+    android:layout_marginTop="10dp"
+    android:elevation="20dp"
+    app:cardCornerRadius="30dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="3dp">
+
+        <LinearLayout
+            android:id="@+id/linearLadfout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingHorizontal="3dp"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/end_Tittle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:text="Title"
+                android:textColor="@color/mainicolor"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLadfyout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:orientation="horizontal"
+            android:paddingHorizontal="3dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/end_numberOfBetters"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Number Of Betters"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+            <TextView
+                android:id="@+id/end_correctAnser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Correct Answer"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+
+            <TextView
+                android:id="@+id/end_CashTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Cash Total"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lineardfyout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingHorizontal="3dp"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/end_hostName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Host Name"
+                android:textColor="@color/mainicolor"
+                android:textSize="13dp" />
+
+
+            <TextView
+                android:id="@+id/end_hostMobile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Host Mobile"
+                android:textColor="@color/mainicolor"
+                android:textSize="13dp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/liearyout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingHorizontal="3dp"
+            android:weightSum="2">
+
+            <TextView
+                android:id="@+id/end_Losers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Losers"
+                android:textColor="@color/black"
+                android:textSize="13dp" />
+
+
+            <TextView
+                android:id="@+id/end_Winners"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginVertical="10dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Winners"
+                android:textColor="@color/mainicolor"
+                android:textSize="13dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/end_Calculations"
+                style="@style/loginButton"
+                android:layout_width="match_parent"
+                android:layout_height="22dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="@dimen/loginViewsMargin"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/grey_40"
+                android:text="Calculate"
+                android:textAllCaps="false"
+                app:initialCornerAngle="27dp"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
+
+
+            <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
+                android:id="@+id/end_deleteButton"
+                style="@style/loginButton"
+                android:layout_width="200dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginHorizontal="40dp"
+                android:layout_marginTop="@dimen/loginViewsMargin"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="@color/grey_40"
+                android:text="Delete This Bet"
+                android:textAllCaps="false"
+                app:initialCornerAngle="27dp"
+                app:spinning_bar_padding="6dp"
+                app:spinning_bar_width="4dp" />
+
+
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="7dp"
+            android:layout_marginTop="10dp"
+            android:elevation="20dp"
+            app:cardCornerRadius="30dp"
+            app:cardBackgroundColor="@color/white">
+
+            <LinearLayout
+                android:id="@+id/linearLdfsgfayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingHorizontal="3dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/finish_RecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp" />
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
+

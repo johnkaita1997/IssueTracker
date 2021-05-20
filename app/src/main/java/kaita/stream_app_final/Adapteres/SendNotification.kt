@@ -12,9 +12,7 @@ import java.util.*
 fun sendNotification(receiverID: String?, message: String) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
-
             Log.d("Mbwa", "sendNotification:  $receiverID")
-
             val jsonResponse: String
             val url = URL("https://onesignal.com/api/v1/notifications")
             val con = url.openConnection() as HttpURLConnection
@@ -26,7 +24,7 @@ fun sendNotification(receiverID: String?, message: String) {
             con.requestMethod = "POST"
             val strJsonBody = ("{"
                     + "\"app_id\": \"${Constants.ONESIGNAL_APP_ID}\","
-                    + "\"filters\": [{\"field\": \"tag\", \"key\": \"User_ID\", \"relation\": \"=\", \"value\": \"" + receiverID + "\"}],"
+                    + "\"filters\": [{\"field\": \"tag\", \"key\": \"$receiverID\", \"relation\": \"=\", \"value\": \"" + receiverID + "\"}],"
                     + "\"data\": {\"foo\": \"bar\"},"
                     + "\"contents\": {\"en\": \"$message\"}"
                     + "}")

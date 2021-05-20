@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.facebook.CallbackManager
@@ -19,10 +18,7 @@ import com.facebook.FacebookSdk
 import com.facebook.share.Sharer
 import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.widget.ShareDialog
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import com.shreyaspatil.firebase.recyclerpagination.LoadingState
@@ -34,7 +30,6 @@ import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.chosen_Answer
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
-import kaita.stream_app_final.Extensions.goToActivity_Unfinished
 import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
@@ -44,9 +39,10 @@ import java.util.*
 
 class YourStreams : AppCompatActivity() {
 
-    val options_Query = FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("options")
     lateinit var callbackManager: CallbackManager
     lateinit var shareDialog: ShareDialog
+    lateinit var options_Query: DatabaseReference
+    lateinit var received_stamp: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +51,10 @@ class YourStreams : AppCompatActivity() {
     }
 
     private fun initall() {
+
+        received_stamp=intent.getStringExtra("stamp")
+        options_Query = FirebaseChecker().homeRef_Streams.child(received_stamp).child("options")
+
         initialize_Facebook()
         load_Active_Stream_Information()
         view_all_betters_text_Click()
@@ -64,9 +64,9 @@ class YourStreams : AppCompatActivity() {
             // Set up the alert builder
             val builder: AlertDialog.Builder = AlertDialog.Builder(this)
             builder.setTitle("How do you want to share this to your friends?")
-            builder.setPositiveButton("Whatsapp",
+            builder.setPositiveButton("Others",
                 DialogInterface.OnClickListener { dialog, which ->
-                    FirebaseChecker().load_selected_Streamer_Stream(Constants.firebaseAuth.currentUser.uid){
+                    FirebaseChecker().load_selected_Streamer_Stream(received_stamp){
                         if (it.exists()) {
 
                             var strAppLink = ""
@@ -80,7 +80,7 @@ class YourStreams : AppCompatActivity() {
                             val title = it.child("title").value.toString()
                             val mybet = it.child("contribution").value.toString()
 
-                            var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${Constants.firebaseAuth.currentUser.uid}"
+                            var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${received_stamp}"
 
                             val a = Intent(Intent.ACTION_SEND)
                             // this is the sharing part
@@ -130,6 +130,7 @@ class YourStreams : AppCompatActivity() {
             val dialog = builder.create()
             dialog.show()
         }
+
     }
 
     private fun initialize_Facebook() {
@@ -144,7 +145,7 @@ class YourStreams : AppCompatActivity() {
                 showAlertDialog("You have to select the answer first")
             } else {
                 //Let us play around with the time first
-                FirebaseDatabase.getInstance().getReference().child("streams").child(firebaseAuth.currentUser.uid).child("cashday").addListenerForSingleValueEvent(object: ValueEventListener{
+                FirebaseDatabase.getInstance().getReference().child("streams").child(received_stamp).child("cashday").addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onCancelled(error: DatabaseError) {
                         makeLongToast("Error Occured: ${error.message}")
                     }
@@ -164,7 +165,7 @@ class YourStreams : AppCompatActivity() {
                                 showAlertDialog("You set the Cash Day on ${final_cash_day}, You can close this Stream only on or after this date, contact us for help")
                             } else {
                                 //Insert the answer to db first
-                                FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("answer").setValue(
+                                FirebaseChecker().homeRef_Streams.child(received_stamp).child("answer").setValue(
                                     chosen_Answer).addOnCompleteListener {
                                     if (it.isComplete) {
                                         FirebaseDatabase.getInstance().getReference().child("streams").child(firebaseAuth.currentUser.uid).child("stamp")
@@ -193,13 +194,13 @@ class YourStreams : AppCompatActivity() {
     }
 
     private fun close_The_Stream(one: String,  chosenAnswer: String) {
-        FirebaseDatabase.getInstance().getReference().child("manage").child(firebaseAuth.currentUser.uid).child("manage").setValue(
-            firebaseAuth.currentUser.uid).addOnCompleteListener {
+        FirebaseDatabase.getInstance().getReference().child("manage").child(received_stamp).child("manage").setValue(
+            received_stamp).addOnCompleteListener {
             if (it.isComplete) {
-                FirebaseChecker().homeRef_Streams.child(firebaseAuth.currentUser.uid).child("remove").setValue("remove").addOnCompleteListener {
+                FirebaseChecker().homeRef_Streams.child(received_stamp).child("remove").setValue("remove").addOnCompleteListener {
                     if (it.isComplete) {
+                        sendNotification("admin", "Complete: User = ${received_stamp}")
                         showAlertDialog("Your Stream was closed, Stream will validate your answer and give you feedback")
-                        sendNotification("admin", "Complete: User = ${firebaseAuth.currentUser.uid}")
                     }
                 }
             } else {
@@ -264,39 +265,62 @@ class YourStreams : AppCompatActivity() {
 
     private fun view_all_betters_text_Click() {
         yourallbets.setSafeOnClickListener {
-            goToActivity_Unfinished(this, ViewAllBetters::class.java)
+            val intent = Intent(this, ActivityForViewingAllTheBetters::class.java)
+            intent.putExtra("access",  received_stamp)
+            startActivity(intent)
         }
     }
 
     private fun load_Active_Stream_Information() {
-        FirebaseChecker().load_selected_Streamer_Stream(firebaseAuth.currentUser.uid) {
-            if (it.exists()) {
-                val title = it.child("title").value.toString()
-                val description = it.child("description").value.toString()
-                val cashday = it.child("cashday").value.toString()
-                val lastday = it.child("lastday").value.toString()
-                val type = it.child("type").value.toString()
-                val contribution = it.child("contribution").value.toString()
-                val numberOfBetters = ((it.child("bets").childrenCount.toInt())).toString()
 
-                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-                val actualcashday: Date = formatter.parse(cashday)
-                val actuallastday: Date = formatter.parse(lastday)
+        FirebaseDatabase.getInstance().reference.child("ids").child(firebaseAuth.currentUser.uid).addListenerForSingleValueEvent(object: ValueEventListener{
+                    override fun onCancelled(error: DatabaseError) {
+                        makeLongToast("Error: ${error.message}")
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists() && snapshot.hasChildren()) {
 
-                yourdescription.setText(description)
-                youtitle.setText(title)
-                yourdue.setText("Due: $actuallastday")
-                yourpaymenton.setText("Payment $actualcashday")
-                yourbetters.setText("Betters\n$numberOfBetters")
-                yourContribution.setText("Your Bet:\nKes: $contribution")
-                yourstreamtype.setText("Type:\n$type")
+                            FirebaseDatabase.getInstance().reference.child("streams").child(received_stamp).addListenerForSingleValueEvent(object: ValueEventListener{
+                                        override fun onCancelled(error: DatabaseError) {
+                                            makeLongToast("Error: ${error.message}")
+                                        }
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            if (snapshot.exists() && snapshot.hasChildren()) {
 
-                total_amount_in_Stream(it.child("contribution").value.toString().toInt())
-            } else {
-                makeLongToast("You have no active Streams")
-                finish()
-            }
-        }
+                                                val title = snapshot.child("title").value.toString()
+                                                val description = snapshot.child("description").value.toString()
+                                                val cashday = snapshot.child("cashday").value.toString()
+                                                val lastday = snapshot.child("lastday").value.toString()
+                                                val type = snapshot.child("type").value.toString()
+                                                val contribution = snapshot.child("contribution").value.toString()
+                                                val numberOfBetters = ((snapshot.child("bets").childrenCount.toInt())).toString()
+
+                                                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                                                val actualcashday: Date = formatter.parse(cashday)
+                                                val actuallastday: Date = formatter.parse(lastday)
+
+                                                yourdescription.setText(description)
+                                                youtitle.setText(title)
+                                                yourdue.setText("Due: $actuallastday")
+                                                yourpaymenton.setText("Payment $actualcashday")
+                                                yourbetters.setText("Betters\n$numberOfBetters")
+                                                yourContribution.setText("Your Bet:\nKes: $contribution")
+                                                yourstreamtype.setText("Type:\n$type")
+
+                                                total_amount_in_Stream(snapshot.child("contribution").value.toString().toInt())
+
+                                            } else {
+                                                makeLongToast("This stream is missing")
+                                                finish()
+                                            }
+                                        }
+                                    })
+                        } else {
+                            makeLongToast("You have no active streams")
+                            finish()
+                        }
+                    }
+                })
     }
 
     private fun total_amount_in_Stream(streamer_amount: Int) {
@@ -320,5 +344,4 @@ class YourStreams : AppCompatActivity() {
         super.onStop()
         Constants.mAdapter_Options.stopListening()
     }
-
 }

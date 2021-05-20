@@ -46,6 +46,8 @@ class AllBetsFragment : Fragment() {
         source.recycler_view_BetsAll.setHasFixedSize(true)
         val mManager = WrappingRecyclerViewLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         //mManager.setOrientation(RecyclerView.HORIZONTAL)
+        mManager.isAutoMeasureEnabled = false
+        source.recycler_view_BetsAll.isEnabled = false
         source.recycler_view_BetsAll.setLayoutManager(mManager)
 
         //Initialize FirebasePagingOptions

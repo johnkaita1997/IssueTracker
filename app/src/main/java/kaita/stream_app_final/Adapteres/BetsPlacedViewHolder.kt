@@ -19,7 +19,8 @@ class BetsPlacedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     fun bind(betsplaced: BetsPlaced, databaseReference: DatabaseReference, viewHolder: BetsPlacedViewHolder, theactivity: FragmentActivity, source: View?) {
         bettername.text = betsplaced.bettername
-        betteramount.text = "Kes: " + betsplaced.bettamount + "\nBet: ${betsplaced.streamoption!!.toUpperCase()}"
+        //betteramount.text = "Kes: " + betsplaced.bettamount + "\nBet: ${betsplaced.streamoption!!.toUpperCase()}"
+        betteramount.text = "Kes: " + betsplaced.bettamount
     }
 
 }
@@ -36,16 +37,16 @@ class BetsPlacedViewHolder_Final(itemView: View) : RecyclerView.ViewHolder(itemV
     private var showOptions: TextView = itemView.findViewById(R.id.mambo_ShowBetters_Button)
 
     fun bind(betsplaced: BetsPlaced_Final, databaseReference: DatabaseReference, viewHolder: BetsPlacedViewHolder_Final, theactivity: FragmentActivity, source: View?) {
-
         tittle.text = betsplaced.betttittle
         amount.text = "Placed: Kes: ${betsplaced.bettamount}"
         dateplaced.text = betsplaced.bettdate
         bettstate.text = betsplaced.bettstate
-        optionchose.text = betsplaced.streamoption!!.toUpperCase()
+        optionchose.text = betsplaced.streamid
+        //optionchose.text = betsplaced.streamoption!!.toUpperCase()
 
         showOptions.setSafeOnClickListener {
             val the_Id = betsplaced.streamid
-                FirebaseDatabase.getInstance().getReference().child("bets").child(the_Id.toString()).addListenerForSingleValueEvent(object: ValueEventListener{
+                FirebaseDatabase.getInstance().getReference().child("streams").child(the_Id.toString()).addListenerForSingleValueEvent(object: ValueEventListener{
                     override fun onCancelled(error: DatabaseError) {
                     }
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -57,10 +58,7 @@ class BetsPlacedViewHolder_Final(itemView: View) : RecyclerView.ViewHolder(itemV
                             theactivity.startActivity(intent)
                         }
                     }
-
                 })
         }
-
     }
-
 }

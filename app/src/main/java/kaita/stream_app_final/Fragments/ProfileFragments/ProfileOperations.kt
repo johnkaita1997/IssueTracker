@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import com.facebook.login.LoginManager
 import kaita.stream_app_final.Activities.Authentication.SignUpActivity
 import kaita.stream_app_final.Activities.ProfileOperations.ParticipateBets
-import kaita.stream_app_final.Activities.ProfileOperations.YourStreams
+import kaita.stream_app_final.Activities.ProfileOperations.ShowStreamList
 import kaita.stream_app_final.Adapteres.CustomCountryList
 import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
@@ -79,7 +79,7 @@ class ProfileOperations : Fragment() {
             val selected = countryNames[position]
 
             when (selected) {
-                "Your Streams" -> requireActivity().goToActivity_Unfinished(requireActivity(), YourStreams::class.java)
+                "Your Streams" -> requireActivity().goToActivity_Unfinished(requireActivity(), ShowStreamList::class.java)
                 "Your Bets" -> requireActivity().goToActivity_Unfinished(requireActivity(), ParticipateBets::class.java)
                 else -> {
                     print("None")

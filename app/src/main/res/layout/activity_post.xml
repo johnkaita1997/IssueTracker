@@ -121,17 +121,18 @@
                             android:id="@+id/cash_Day_Button"
                             android:textAllCaps="false"
                             android:layout_width="match_parent"
-                            android:layout_height="40dp"
+                            android:layout_height="60dp"
                             android:layout_marginTop="12dp"
                             android:text="Expected Cash-Out Date"
                             android:textColor="@color/black" />
 
                         <Button
+                            android:visibility="gone"
                             android:textAllCaps="false"
                             android:id="@+id/closed_or_open"
                             android:layout_width="match_parent"
                             android:layout_marginHorizontal="50dp"
-                            android:layout_height="40dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="Closed Or Open?"
                             android:textColor="@color/black" />

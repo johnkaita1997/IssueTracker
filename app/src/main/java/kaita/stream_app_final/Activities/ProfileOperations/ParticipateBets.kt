@@ -38,6 +38,8 @@ class ParticipateBets : AppCompatActivity() {
         recycler_participate_Bets.setHasFixedSize(true)
         val mManager = WrappingRecyclerViewLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         //mManager.setOrientation(RecyclerView.HORIZONTAL)
+        mManager.isAutoMeasureEnabled = false
+        recycler_participate_Bets.isEnabled = false
         recycler_participate_Bets.setLayoutManager(mManager)
 
         betsPlaced_Query.addValueEventListener(object: ValueEventListener {
@@ -51,6 +53,7 @@ class ParticipateBets : AppCompatActivity() {
                 }
             }
         })
+
 
         //Initialize FirebasePagingOptions
         Constants.BetsPlaced_Paging_Final = DatabasePagingOptions.Builder<BetsPlaced_Final>()

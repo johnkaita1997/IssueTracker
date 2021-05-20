@@ -1,11 +1,7 @@
 package kaita.stream_app_final.Activities
 
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import kaita.stream_app_final.Activities.Normal.MainActivity
-import kaita.stream_app_final.R
 import org.junit.Test
 
 class MainActivityTest {

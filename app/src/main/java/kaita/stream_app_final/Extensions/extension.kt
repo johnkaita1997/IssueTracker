@@ -3,6 +3,7 @@ package kaita.stream_app_final.Extensions
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.ProgressDialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -67,8 +68,8 @@ fun Context.showAlertDialog_Special(alertDialog: AlertDialog, title: String, mes
         dialog.dismiss()
     }
     alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, okaybuttonName) { dialog, which ->
-        bar()
         dialog.dismiss()
+        bar()
     }
 
     if (alertDialog.isShowing) {
@@ -87,9 +88,18 @@ fun Context.showAlertDialog_Special(alertDialog: AlertDialog, title: String, mes
 
 }
 
-
-
 fun Context.dissmissAlertDialogMessage() {
     alert?.dismiss()
 
 }
+
+/*
+fun openYoutubeLink(youtubeID: String) {
+    val intentApp = Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + youtubeID))
+    val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + youtubeID))
+    try {
+        this.startActivity(intentApp)
+    } catch (ex: ActivityNotFoundException) {
+        this.startActivity(intentBrowser)
+    }
+}*/

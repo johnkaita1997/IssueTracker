@@ -48,6 +48,22 @@ class Comments {
 }
 
 
+
+class Scientist {
+    var mId: String? = null
+    var name: String? = null
+    var description: String? = null
+
+    constructor()
+    constructor(name: String?, mId: String?, description: String?) {
+        this.name = name
+        this.mId = mId
+        this.description = description
+    }
+
+}
+
+
 public fun date_Converter (): String {
     var c = Calendar.getInstance()
     var daaaay = c.get(Calendar.DAY_OF_MONTH)

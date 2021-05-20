@@ -18,7 +18,6 @@ import kaita.stream_app_final.Adapteres.*
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
 import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Fragments.CreateStream.Closed
-import kaita.stream_app_final.Fragments.CreateStream.OpenEnded
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_post.*
 import java.text.SimpleDateFormat
@@ -53,11 +52,10 @@ class PostActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener,  Da
     }
 
     private fun initall() {
-
         load_User_Image()
         fm = supportFragmentManager
         ft = fm.beginTransaction()
-        ft.add(R.id.fragment_holder, OpenEnded(), "Edit Profile")
+        ft.add(R.id.fragment_holder, Closed(), "Edit Profile")
         ft.commit()
 
         cash_Day_Button.setSafeOnClickListener {
@@ -96,10 +94,10 @@ class PostActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener,  Da
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.open_ended_menu -> {
-                fragment = OpenEnded()
+               /* fragment = OpenEnded()
                 ft = fm.beginTransaction()
                 ft.replace(R.id.fragment_holder, fragment)
-                ft.commit()
+                ft.commit()*/
                 true
             }
             R.id.closed_ended_menu -> {

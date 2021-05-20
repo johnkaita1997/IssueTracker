@@ -3,15 +3,59 @@ package kaita.stream_app_final.AppConstants
 import android.app.AlertDialog
 import android.view.View
 import androidx.paging.PagedList
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import dmax.dialog.SpotsDialog
-import kaita.stream_app_final.Activities.Modals.*
+import kaita.stream_app_final.Activities.Modals.BetsPlaced
+import kaita.stream_app_final.Activities.Modals.BetsPlaced_Final
+import kaita.stream_app_final.Activities.Modals.Options
+import kaita.stream_app_final.Activities.Modals.Post
 import kaita.stream_app_final.Adapteres.*
+import kaita.stream_app_final.Adapteres.Categories.Category
+import kaita.stream_app_final.Adapteres.Categories.CategoryViewHolder
+import kaita.stream_app_final.Adapteres.Complaints.ComplainViewHolder
+import kaita.stream_app_final.Adapteres.Complaints.Complained
+import kaita.stream_app_final.Adapteres.CreatePost.CreatePost
+import kaita.stream_app_final.Adapteres.CreatePost.CreatePostViewHolder
+import kaita.stream_app_final.Adapteres.EndBet.EndBet
+import kaita.stream_app_final.Adapteres.EndBet.EndBet_ViewHolder
+import kaita.stream_app_final.Adapteres.Expectingpayment.ExpectingPaymented
+import kaita.stream_app_final.Adapteres.Expectingpayment.ExpectingPaymentedViewHolder
+import kaita.stream_app_final.Adapteres.Finish.Finished
+import kaita.stream_app_final.Adapteres.Finish.FinishedViewHolder
+import kaita.stream_app_final.Adapteres.ShowStreamList.StreamList
+import kaita.stream_app_final.Adapteres.ShowStreamList.StreamListViewHolder
 
 object Constants {
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //              PAGINATION START
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    val mPosts = 5 //The number of posts to be viewed on each screen
+    val database: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //These are all the constants within our application
     var loaded = false
     const val permission_request = 100
@@ -28,9 +72,23 @@ object Constants {
     val config = PagedList.Config.Builder()
         .setEnablePlaceholders(false)
         .setPrefetchDistance(2)
-        .setPageSize(20)
+        .setPageSize(2)
         .build()
-    public lateinit var mAdapter: FirebaseRecyclerPagingAdapter<Post, HomeFragmentViewHolder>
+    public lateinit var mAdapter: FirestorePagingAdapter<Post, HomeFragmentViewHolder>
+
+    public lateinit var complainsAdapter: FirebaseRecyclerAdapter<Complained, ComplainViewHolder>
+
+    public lateinit var expectionPaymentAdapter: FirebaseRecyclerAdapter<ExpectingPaymented, ExpectingPaymentedViewHolder>
+
+    public lateinit var finishAdapter: FirebaseRecyclerAdapter<Finished, FinishedViewHolder>
+
+    public lateinit var categories_Adapter: FirebaseRecyclerAdapter<Category, CategoryViewHolder>
+
+    public lateinit var createPostAdapter: FirebaseRecyclerAdapter<CreatePost, CreatePostViewHolder>
+
+    public lateinit var streamList_Adapter: FirebaseRecyclerAdapter<StreamList, StreamListViewHolder>
+
+
     public lateinit var options : DatabasePagingOptions<Post>
 
     public lateinit var options_Second : DatabasePagingOptions<Options>

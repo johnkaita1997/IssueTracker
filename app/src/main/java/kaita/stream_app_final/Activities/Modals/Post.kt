@@ -7,7 +7,7 @@ data class Post(
     var hostname: String? = null,
     var contribution: String? = null,
     var remove: String? = null,
-    var howtoshare: String? = null
+    var howtoshare: String? = null,
+    var host: String? = null,
+    var stamp: String? = null
 )
-
-data class EndBet(var manage: String? = null)

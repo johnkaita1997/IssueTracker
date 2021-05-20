@@ -7,11 +7,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
@@ -19,33 +22,42 @@ import com.facebook.FacebookSdk
 import com.facebook.share.Sharer
 import com.facebook.share.model.ShareLinkContent
 import com.facebook.share.widget.ShareDialog
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
+import com.firebase.ui.database.FirebaseRecyclerAdapter
+import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.*
+import com.google.firebase.firestore.DocumentReference
+import com.onesignal.OneSignal
 import com.travijuu.numberpicker.library.NumberPicker
+import dmax.dialog.SpotsDialog
 import kaita.stream_app_final.Activities.Normal.PostActivity
+import kaita.stream_app_final.Adapteres.CreatePost.CreatePost
+import kaita.stream_app_final.Adapteres.CreatePost.CreatePostViewHolder
 import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants
+import kaita.stream_app_final.AppConstants.Constants.database
 import kaita.stream_app_final.AppConstants.Constants.fdpurl
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
 import kaita.stream_app_final.AppConstants.Constants.fname
 import kaita.stream_app_final.AppConstants.Constants.progressDialog
+import kaita.stream_app_final.AppConstants.Constants.selected_id
 import kaita.stream_app_final.AppConstants.Constants.streams
 import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
-import kotlinx.android.synthetic.main.fragment_closed.*
 import kotlinx.android.synthetic.main.fragment_closed.view.*
+import java.util.*
+import kotlin.collections.HashMap
 
 
-class Closed : Fragment() {
+class Closed : Fragment(){
 
     private lateinit var source : View
     val hashMap_Stream_Options = HashMap<String, Any>()
     val hashmap_Abcd = HashMap<String, String>()
     lateinit var callbackManager: CallbackManager
     lateinit var shareDialog: ShareDialog
+    lateinit var popup : PopupMenu
 
     override fun onCreateView( inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         source =  inflater.inflate(R.layout.fragment_closed, container, false)
@@ -55,6 +67,9 @@ class Closed : Fragment() {
     }
 
     private fun initall() {
+
+        load_Alphabets()
+        progressDialog = SpotsDialog.Builder().setContext(requireContext()).build() as SpotsDialog
 
         initialize_Facebook()
 
@@ -84,74 +99,63 @@ class Closed : Fragment() {
             } else if (comparision == 0) {
                 requireActivity().showAlertDialog("Cash day and final betting day can't be equal")
             }else {
+                popup = PopupMenu(requireActivity(), it)
 
-                if (!progressDialog.isShowing) { progressDialog.show()}
-                FirebaseChecker().load_All {
-                    var name = it.child(fname).value.toString()
-                    var dpurl = it.child(fdpurl).value.toString()
+                //Load firebase menu now
+                FirebaseDatabase.getInstance().reference.child("categories").addListenerForSingleValueEvent(object: ValueEventListener{
+                            override fun onCancelled(error: DatabaseError) {
+                                requireActivity().makeLongToast("Error: ${error.message}")
+                            }
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists() && snapshot.hasChildren()) {
+                                    for (value in snapshot.children) {
+                                        val category_Option = value.child("name").value.toString()
+                                        popup.menu.add(category_Option)
+                                    }
+                                } else {
+                                    requireActivity().makeLongToast("Error!, missing info for categories.")
+                                }
 
-                    hashMap_Stream_Options["title"] = title
-                    hashMap_Stream_Options["description"] = description
-                    hashMap_Stream_Options["joinnumber"] = joinnumber
-                    hashMap_Stream_Options["lastday"] = last_day
-                    hashMap_Stream_Options["cashday"] = cash_day
-                    hashMap_Stream_Options["paid"] = "paid"
-                    hashMap_Stream_Options["open"] = "open"
-                    hashMap_Stream_Options["contribution"] = "0"
-                    hashMap_Stream_Options["type"] = "Closed"
-                    hashMap_Stream_Options["host"] = firebaseAuth.currentUser.uid
-                    hashMap_Stream_Options["hostimage"] = dpurl
-                    hashMap_Stream_Options["hostname"] = name
-                    val currentTimestamp = System.currentTimeMillis()
-                    hashMap_Stream_Options["stamp"] = currentTimestamp
-                    hashMap_Stream_Options["remove"] = "None"
+                                popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener{
+                                    override fun onMenuItemClick(item: MenuItem?): Boolean {
+                                        val entered_Category = item!!.title.toString()
 
-                    do_Everything_DatabaseO_Related()
+                                        if (!progressDialog.isShowing) { progressDialog.show()}
+                                        FirebaseChecker().load_All {
 
-                }
+                                            var name = it.child(fname).value.toString()
+                                            var dpurl = it.child(fdpurl).value.toString()
+
+                                            hashMap_Stream_Options["title"] = title.capitalize()
+                                            hashMap_Stream_Options["description"] = description.capitalize()
+                                            hashMap_Stream_Options["joinnumber"] = joinnumber
+                                            hashMap_Stream_Options["category"] = entered_Category
+                                            hashMap_Stream_Options["lastday"] = last_day
+                                            hashMap_Stream_Options["cashday"] = cash_day
+                                            hashMap_Stream_Options["paid"] = "paid"
+                                            hashMap_Stream_Options["open"] = "open"
+                                            hashMap_Stream_Options["contribution"] = "0"
+                                            hashMap_Stream_Options["type"] = "Closed"
+                                            hashMap_Stream_Options["host"] = firebaseAuth.currentUser.uid
+                                            hashMap_Stream_Options["hostimage"] = dpurl
+                                            hashMap_Stream_Options["hostname"] = name
+                                            val currentTimestamp = System.currentTimeMillis()
+                                            hashMap_Stream_Options["stamp"] = currentTimestamp.toString()
+                                            hashMap_Stream_Options["remove"] = "None"
+                                            hashMap_Stream_Options["order"] = -1 * Date().getTime()
+
+                                            do_Everything_DatabaseO_Related(currentTimestamp, title)
+                                        }
+                                        return false
+                                    }
+                                })
+
+                                popup.show()
+
+                            }
+                        })
             }
         }
-
-         source.save_A.setSafeOnClickListener{
-             visibility_For_Layout_A()
-             if (hashmap_Abcd["a"] != null) {
-                 source.closed_edit_A.setText(hashmap_Abcd["a"].toString())
-             }
-         }
-         source.save_B.setSafeOnClickListener{
-             if (hashmap_Abcd.get("a") == null) {
-                 activity?.showAlertDialog("Set Option A First")
-             } else {
-                 visibility_For_Layout_B()
-                 if (hashmap_Abcd["b"] != null) {
-                     source.closed_edit_B.setText(hashmap_Abcd["b"].toString())
-                 }
-             }
-         }
-         source.save_C.setSafeOnClickListener{
-             if (hashmap_Abcd.get("a") == null || hashmap_Abcd.get("b") == null) {
-                 activity?.showAlertDialog("Set Option A and B First")
-             } else {
-             visibility_For_Layout_C()
-                 if (hashmap_Abcd["c"] != null) {
-                     source.closed_edit_C.setText(hashmap_Abcd["c"].toString())
-                 }
-             }
-         }
-         source.save_D.setSafeOnClickListener{
-             if (hashMap_Stream_Options.get("a") == null || hashMap_Stream_Options.get("b") == null || hashMap_Stream_Options.get("c") == null) {
-                 activity?.showAlertDialog("Set Option A, B and C First")
-             } else {
-             visibility_For_Layout_D()
-                 if (hashMap_Stream_Options["d"] != null) {
-                     source.closed_edit_D.setText(hashMap_Stream_Options["d"].toString())
-                 }
-             }
-         }
-        listener_For_A()
-        listener_For_B()
-        listener_For_C()
-        listener_For_D()
     }
 
     private fun initialize_Facebook() {
@@ -160,18 +164,13 @@ class Closed : Fragment() {
         shareDialog = ShareDialog(this)
     }
 
-    private fun do_Everything_DatabaseO_Related() {
-        actual_Database_Code()
+    private fun do_Everything_DatabaseO_Related(currentTimestamp: Long, title: String) {
+        actual_Database_Code(currentTimestamp, title)
     }
 
-    private fun actual_Database_Code() {
+    private fun actual_Database_Code(currentTimestamp: Long, title: String) {
         streams.child(firebaseAuth.currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    requireActivity().showAlertDialog("You can only have one stream active")
-                    if (progressDialog.isShowing) {progressDialog.dismiss()}
-                } else {
-
                     // Set up the alert builder
                     val builder: AlertDialog.Builder = AlertDialog.Builder(context)
                     builder.setTitle("How do you want to share your stream")
@@ -186,15 +185,13 @@ class Closed : Fragment() {
                             if (position !=-1){
                                 val selectedItem = choicelist[position]
                                 hashMap_Stream_Options["howtoshare"] = selectedItem
-                                now_Write_Db_Code(selectedItem)
+                                now_Write_Db_Code(selectedItem, currentTimestamp, title)
                             }
                         })
                     builder.setNegativeButton("Cancel", null)
                     // Create and show the alert dialog
                     val dialog: AlertDialog = builder.create()
                     dialog.show()
-
-                }
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -204,46 +201,102 @@ class Closed : Fragment() {
         })
     }
 
-    private fun now_Write_Db_Code(selectedItem: String) {
-        streams.child(firebaseAuth.currentUser.uid).setValue(hashMap_Stream_Options).addOnCompleteListener {
+    private fun now_Write_Db_Code(selectedItem: String, currentTimestamp: Long, title: String) {
+        //Add to firestore
+        val ref: DocumentReference = database.collection("streams").document(currentTimestamp.toString())
+        ref.set(hashMap_Stream_Options).addOnCompleteListener {
             if (it.isSuccessful) {
                 hashmap_Abcd.forEach {
-                    Constants.streams.child(Constants.firebaseAuth.currentUser.uid).child("options").child(it.key).child("name").setValue(it.value).addOnCompleteListener {
+
+                    val addMap = java.util.HashMap<String, String>()
+                    addMap["name"] = it.value
+
+                    val reference_two: DocumentReference =
+                        database.collection("streams/${currentTimestamp}/options")
+                            .document(it.key)
+                    reference_two.set(addMap).addOnCompleteListener {
                         if (it.isSuccessful) {
                         } else {
-                            if (progressDialog.isShowing) {progressDialog.dismiss()}
-                            requireActivity().showAlertDialog("Task Failed ${it.exception.toString()}")
+                            requireActivity().makeLongToast("Error: ${it.exception.toString()}")
                         }
                     }
                 }
-                empty_edit_Text_Values(selectedItem)
+
+                val separate_hashmap = HashMap<String, String>()
+                separate_hashmap["title"] = title
+                separate_hashmap["stamp"] = currentTimestamp.toString()
+
+                //Add that to people keys
+                FirebaseDatabase.getInstance().reference.child("keys")
+                    .child(currentTimestamp.toString()).setValue(firebaseAuth.currentUser.uid)
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+
+                            FirebaseDatabase.getInstance().reference.child("ids")
+                                .child(firebaseAuth.currentUser.uid).child(currentTimestamp.toString())
+                                .setValue(separate_hashmap).addOnCompleteListener {
+                                if (it.isSuccessful) {
+
+                                    streams.child(currentTimestamp.toString())
+                                        .setValue(hashMap_Stream_Options).addOnCompleteListener {
+                                        if (it.isSuccessful) {
+                                            hashmap_Abcd.forEach {
+                                                Constants.streams.child(currentTimestamp.toString())
+                                                    .child("options").child(it.key).child("name")
+                                                    .setValue(it.value).addOnCompleteListener {
+                                                    if (it.isSuccessful) {
+                                                    } else {
+                                                        if (progressDialog.isShowing) {
+                                                            progressDialog.dismiss()
+                                                        }
+                                                        requireActivity().showAlertDialog("Task Failed ${it.exception.toString()}")
+                                                    }
+                                                }
+                                            }
+                                            empty_edit_Text_Values(currentTimestamp.toString())
+
+                                        } else {
+                                            if (progressDialog.isShowing) {
+                                                progressDialog.dismiss()
+                                            }
+                                            requireActivity().showAlertDialog("Task Failed: ${it.exception.toString()}")
+                                        }
+                                    }
+
+                                } else {
+                                    requireActivity().makeLongToast("Incomplete: ${it.exception.toString()}")
+                                }
+                            }
+                        } else {
+                            requireActivity().makeLongToast("Error: ${it.exception.toString()}")
+                        }
+                    }
 
             } else {
-                if (progressDialog.isShowing) {progressDialog.dismiss()}
-                requireActivity().showAlertDialog("Task Failed: ${it.exception.toString()}")
+                requireActivity().makeLongToast("Incomplete: ${it.exception.toString()}")
             }
         }
+
     }
 
-    private fun empty_edit_Text_Values(selectedItem: String) {
+    private fun empty_edit_Text_Values(currenttimestamp: String) {
+
         val stream_tittle = requireActivity().findViewById(R.id.stream_tittle) as EditText
         val stream_description = requireActivity().findViewById(R.id.stream_description) as EditText
         stream_description.setText("")
         stream_tittle.setText("")
-        source.closed_edit_A.setText("")
         source.closed_edit_B.setText("")
         source.closed_edit_C.setText("")
         source.closed_edit_D.setText("")
+        OneSignal.sendTag(currenttimestamp, currenttimestamp)
         if (progressDialog.isShowing) {progressDialog.dismiss()}
-
         // Set up the alert builder
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
         builder.setTitle("Your stream was posted successfully. Share this Stream to your friends")
-        builder.setPositiveButton("Whatsapp",
+        builder.setPositiveButton("Others",
             DialogInterface.OnClickListener { dialog, which ->
-                FirebaseChecker().load_selected_Streamer_Stream(Constants.firebaseAuth.currentUser.uid){
+                FirebaseChecker().load_selected_Streamer_Stream(currenttimestamp){
                     if (it.exists()) {
-
                         var strAppLink = ""
                         val appPackageName = requireContext().getPackageName();
                         strAppLink = try {
@@ -255,7 +308,7 @@ class Closed : Fragment() {
                         val title = it.child("title").value.toString()
                         val mybet = it.child("contribution").value.toString()
 
-                        var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${Constants.firebaseAuth.currentUser.uid}"
+                        var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${selected_id}"
 
                         val a = Intent(Intent.ACTION_SEND)
                         // this is the sharing part
@@ -265,6 +318,7 @@ class Closed : Fragment() {
                         a.putExtra(Intent.EXTRA_SUBJECT, shareSub)
                         a.putExtra(Intent.EXTRA_TEXT, shareBody)
                         startActivity(Intent.createChooser(a, "Share Using"))
+                        requireActivity().finish()
 
                     } else {
                         requireActivity().makeLongToast("Important information missing")
@@ -300,137 +354,50 @@ class Closed : Fragment() {
                 }
                 dialog.dismiss()
             })
-        builder.setNeutralButton("Dismiss", null)
+        builder.setNeutralButton("Dismiss", DialogInterface.OnClickListener { dialog, which ->
+            dialog.dismiss()
+            requireActivity().finish()
+        } )
         // Create and show the alert dialog
         val dialog: AlertDialog = builder.create()
         dialog.show()
 
     }
 
-    private fun listener_For_A() {
-        source.register_A.setSafeOnClickListener {
-            val selected_Option = source.closed_edit_A.text.toString().trim()
-            if (selected_Option != "") {
-                show_Image_Saved(question_Mark_A)
-                hashmap_Abcd["a"] = selected_Option
-            } else {
-                requireActivity().makeLongToast("Enter the option first")
+    private fun load_Alphabets() {
+        source.createPost_RecyclerView.setHasFixedSize(true)
+        val numberOfColumns = 1
+        val mManager = GridLayoutManager(requireActivity(), numberOfColumns)
+        mManager.orientation = RecyclerView.HORIZONTAL
+        source.createPost_RecyclerView.setLayoutManager(mManager)
+
+        val peopleReference: DatabaseReference = FirebaseDatabase.getInstance().getReference().child("alphabets")
+        val options: FirebaseRecyclerOptions<CreatePost?> = FirebaseRecyclerOptions.Builder<CreatePost>()
+            .setQuery(peopleReference, CreatePost::class.java)
+            .build()
+
+        Constants.createPostAdapter = object : FirebaseRecyclerAdapter<CreatePost, CreatePostViewHolder>(options) {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CreatePostViewHolder {
+                val view: View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_create_post, parent, false)
+                return CreatePostViewHolder(view)
+            }
+            override fun onBindViewHolder(viewholder: CreatePostViewHolder, position: Int, createpost: CreatePost) {
+                viewholder.bind(createpost, viewholder, requireActivity(), hashmap_Abcd)
             }
         }
-        source.remove_A.setSafeOnClickListener {
-            show_option_Removed(question_Mark_A)
-            hashmap_Abcd.remove("a")
-            source.closed_edit_A.setText("")
+        source.createPost_RecyclerView.adapter = Constants.createPostAdapter
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Constants.createPostAdapter.startListening();
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (Constants.createPostAdapter != null) {
+            Constants.createPostAdapter.stopListening();
         }
+        Constants.chosen_Answer = ""
     }
-
-    private fun listener_For_B() {
-        source.register_B.setSafeOnClickListener {
-            val selected_Option = source.closed_edit_B.text.toString().trim()
-            if (selected_Option != "") {
-                show_Image_Saved(question_Mark_B)
-                hashmap_Abcd["b"] = selected_Option
-            } else {
-                requireActivity().makeLongToast("Enter the option first")
-            }
-        }
-
-        source.remove_B.setSafeOnClickListener {
-            show_option_Removed(question_Mark_B)
-            hashmap_Abcd.remove("b")
-            source.closed_edit_B.setText("")
-        }
-    }
-
-
-    private fun listener_For_C() {
-        source.register_C.setSafeOnClickListener {
-            val selected_Option = source.closed_edit_C.text.toString().trim()
-            if (selected_Option != "") {
-                show_Image_Saved(question_Mark_C)
-                hashmap_Abcd["c"] = selected_Option
-            } else {
-                requireActivity().makeLongToast("Enter the option first")
-            }
-        }
-        source.remove_C.setSafeOnClickListener {
-            show_option_Removed(question_Mark_C)
-            hashmap_Abcd.remove("c")
-            source.closed_edit_C.setText("")
-        }
-    }
-
-    private fun listener_For_D() {
-        source.register_D.setSafeOnClickListener {
-            val selected_Option = source.closed_edit_D.text.toString().trim()
-            if (selected_Option != "") {
-                show_Image_Saved(question_Mark_D)
-                hashmap_Abcd["d"] = selected_Option
-            } else {
-                requireActivity().makeLongToast("Enter the option first")
-            }
-        }
-
-        source.remove_D.setSafeOnClickListener {
-            show_option_Removed(question_Mark_D)
-            hashmap_Abcd.remove("d")
-            source.closed_edit_D.setText("")
-        }
-    }
-
-    private fun show_option_Removed(imageView: ImageView?) {imageView?.setImageResource(R.drawable.questionmark)}
-    private fun show_Image_Saved(imageView: ImageView?) { imageView?.setImageResource(R.drawable.greentick)}
-
-    private fun visibility_For_Layout_A() {
-        showA()
-        hideB()
-        hideC()
-        hideD()
-    }
-
-    private fun visibility_For_Layout_B() {
-        showB()
-        hideA()
-        hideC()
-        hideD()
-    }
-
-    private fun visibility_For_Layout_C() {
-        showC()
-        hideB()
-        hideA()
-        hideD()
-    }
-    private fun visibility_For_Layout_D() {
-        showD()
-        hideB()
-        hideC()
-        hideA()
-    }
-
-    private fun hideD() {
-        source.layout_D.visibility = View.GONE
-    }
-    private fun hideC() {
-        source.layout_C.visibility = View.GONE
-    }
-    private fun hideB() {
-        source.layout_B.visibility = View.GONE
-    }
-    private fun hideA() {
-        source.layout_A.visibility = View.GONE
-    }
-    private fun showD() {
-        source.layout_D.visibility = View.VISIBLE
-    }
-    private fun showC() {
-        source.layout_C.visibility = View.VISIBLE
-    }
-    private fun showB() {
-        source.layout_B.visibility = View.VISIBLE
-    }
-    private fun showA() {
-        source.layout_A.visibility = View.VISIBLE
-    }
-
 }

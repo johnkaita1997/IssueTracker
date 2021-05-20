@@ -24,6 +24,7 @@ import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.chosen_Answer
 import kaita.stream_app_final.AppConstants.Constants.selected_id
 import kaita.stream_app_final.R
+import kotlinx.android.synthetic.main.fragment_all_bets.view.*
 import kotlinx.android.synthetic.main.fragment_bottom_home.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -93,6 +94,8 @@ class BottomHomeFragment : Fragment() {
        source.recycler_view_Bets.setHasFixedSize(true)
        val mManager = WrappingRecyclerViewLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
        //mManager.setOrientation(RecyclerView.HORIZONTAL)
+       mManager.isAutoMeasureEnabled = false
+       source.recycler_view_Bets.isEnabled = false
        source.recycler_view_Bets.setLayoutManager(mManager)
 
        betsPlaced_Query.addValueEventListener(object: ValueEventListener {

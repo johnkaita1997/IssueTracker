@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/swipeRefreshLayout_Options"
+    android:id="@+id/swipeRefreshLaysout_Options"
     style="android.R.style.Theme_Black_NoTitleBar_Fullscreen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

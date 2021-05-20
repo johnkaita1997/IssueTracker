@@ -1,3 +1,4 @@
+/*
 package kaita.stream_app_final.Fragments.CreateStream
 
 import android.app.AlertDialog
@@ -314,4 +315,4 @@ class OpenEnded : Fragment() {
         dialog.show()
 
     }
-}
+}*/

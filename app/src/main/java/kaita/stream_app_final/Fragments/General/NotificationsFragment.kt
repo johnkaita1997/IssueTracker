@@ -3,8 +3,10 @@ package kaita.stream_app_final.Fragments.General
 import android.os.Bundle
 import android.util.Base64
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,12 +18,17 @@ import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import com.shreyaspatil.firebase.recyclerpagination.LoadingState
 import com.twigafoods.daraja.Daraja
-import kaita.stream_app_final.Activities.Modals.EndBet
-import kaita.stream_app_final.Adapteres.EndBet_ViewHolder
+import kaita.stream_app_final.Activities.Admin.Complains
+import kaita.stream_app_final.Activities.Admin.DeleteReturn
+import kaita.stream_app_final.Activities.Admin.ExpectingPaymentActivity
+import kaita.stream_app_final.Activities.Admin.MoneyActivity
+import kaita.stream_app_final.Adapteres.EndBet.EndBet
+import kaita.stream_app_final.Adapteres.EndBet.EndBet_ViewHolder
 import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
+import kaita.stream_app_final.Extensions.goToActivity_Unfinished
 import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
@@ -30,13 +37,13 @@ import kotlinx.android.synthetic.main.fragment_notifications.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-
 class NotificationsFragment : Fragment() {
 
     private lateinit var source : View
     private lateinit var thetoken : String
     private lateinit var daraja: Daraja
     var valueListener: ValueEventListener? = null
+    lateinit var popup : PopupMenu
 
     @Nullable
     override fun onCreateView( inflater: LayoutInflater, @Nullable container: ViewGroup?, @Nullable savedInstanceState: Bundle? ): View? {
@@ -60,6 +67,34 @@ class NotificationsFragment : Fragment() {
 
         set_Visibility_Of_Recycler_View_To_Gone_If_Not_Admin()
 
+        operations_Button_Listener()
+
+    }
+
+    private fun operations_Button_Listener() {
+        source.adminoperations.setSafeOnClickListener {
+            popup = PopupMenu(requireActivity(), it)
+            popup.menu.add("Complains")
+            popup.menu.add("Money")
+            popup.menu.add("Delete | Return")
+            popup.menu.add("Expecting Payment")
+            popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener{
+                override fun onMenuItemClick(item: MenuItem?): Boolean {
+                    val entered_Category = item!!.title.toString()
+                    if (entered_Category.equals("Complains")) {
+                        requireActivity().goToActivity_Unfinished(requireActivity(), Complains::class.java)
+                    }else if (entered_Category.equals("Money")) {
+                        requireActivity().goToActivity_Unfinished(requireActivity(), MoneyActivity::class.java)
+                    }else if (entered_Category.equals("Expecting Payment")) {
+                        requireActivity().goToActivity_Unfinished(requireActivity(), ExpectingPaymentActivity::class.java)
+                    }else if (entered_Category.equals("Delete | Return")) {
+                        requireActivity().goToActivity_Unfinished(requireActivity(), DeleteReturn::class.java)
+                    }
+                    return false
+                }
+            })
+            popup.show()
+        }
     }
 
     private fun set_Visibility_Of_Recycler_View_To_Gone_If_Not_Admin() {
@@ -68,6 +103,8 @@ class NotificationsFragment : Fragment() {
             }
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.child("admin").exists()) {
+                    source.finishTextView.visibility = View.VISIBLE
+                    source.adminoperations.visibility = View.VISIBLE
                 } else {
                     if (endView_Container != null && endView_Container.visibility == View.VISIBLE) {
                         endView_Container.visibility = View.GONE
@@ -113,6 +150,7 @@ class NotificationsFragment : Fragment() {
             }
 
             override fun onError(databaseError: DatabaseError) {
+                //requireActivity().makeLongToast(databaseError.message.toString())
             }
 
             override fun onLoadingStateChanged(state: LoadingState) {
@@ -120,7 +158,6 @@ class NotificationsFragment : Fragment() {
                 }
             }
         }
-
         source.recycler_view.adapter = Constants.mAdapter_Options_End
     }
 
@@ -146,7 +183,7 @@ class NotificationsFragment : Fragment() {
             complain_HashMap["email"] = email
             complain_HashMap["complain"] = thecomplaint
 
-            FirebaseDatabase.getInstance().getReference().child("complains").child(firebaseAuth.currentUser.uid).push().setValue(complain_HashMap).addOnCompleteListener {
+            FirebaseDatabase.getInstance().getReference().child("complains").push().setValue(complain_HashMap).addOnCompleteListener {
                 if (it.isSuccessful) {
                     requireActivity().showAlertDialog("Thank you for reaching to us, we will get back to you over this issue.")
                     source.thecomplaint.setText("")

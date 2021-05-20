@@ -2,12 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+
     <item
-        android:id="@+id/create_Stream"
+        android:id="@+id/search"
+        android:icon="@drawable/ic_search"
+        android:iconTint="@color/black"
         android:orderInCategory="100"
         android:title="Updates"
-        android:iconTint="@color/white"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/create_Stream"
         android:icon="@drawable/add"
+        android:iconTint="@color/white"
+        android:orderInCategory="100"
+        android:title="Updates"
         app:showAsAction="always" />
 
 </menu>
