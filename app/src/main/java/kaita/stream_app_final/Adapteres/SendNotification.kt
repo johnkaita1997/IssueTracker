@@ -18,6 +18,7 @@ fun sendNotification(receiverID: String?, message: String) {
             val con = url.openConnection() as HttpURLConnection
             con.useCaches = false
             con.doOutput = true
+            con.doOutput = true
             con.doInput = true
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8")
             con.setRequestProperty("Authorization", "Basic MzcyNmIxNTgtZWM4My00ZTYyLWFmNmEtNmZjOGNhNjFhNjY4")

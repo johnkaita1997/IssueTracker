@@ -70,12 +70,12 @@ class PostActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener,  Da
             datePicker.show(supportFragmentManager, "lastday")
         }
 
-        closed_or_open.setSafeOnClickListener {
+        /*closed_or_open.setSafeOnClickListener {
             val popup = PopupMenu(this, it)
             popup.setOnMenuItemClickListener(this@PostActivity)
             popup.inflate(R.menu.popup_menu)
             popup.show()
-        }
+        }*/
 
     }
 
@@ -162,7 +162,7 @@ class PostActivity : AppCompatActivity(), PopupMenu.OnMenuItemClickListener,  Da
             c.set(theyear, themonth, thedayofthemonth, hourOfDay, minute, 22)
             val chosenDateTime = simpleformat.format(c.time)
             cashday = chosenDateTime
-            cash_Day_Button.setText("Cash Day: $cashday - Tap to change")
+            cash_Day_Button.setText("Results Day: $cashday - Tap to change")
             FirebaseDatabase.getInstance().getReference().child("users").child(firebaseAuth.currentUser.uid).child("cashday").setValue(cashday).addOnCompleteListener {
                 if (it.isSuccessful) {
                 } else {

@@ -1,11 +1,15 @@
 package kaita.stream_app_final.Activities.ProfileOperations
 
+import android.R.id.message
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +26,7 @@ import com.google.firebase.database.*
 import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import com.shreyaspatil.firebase.recyclerpagination.LoadingState
+import kaita.stream_app_final.Activities.BottomSheet.BottomSheetDialogContainer
 import kaita.stream_app_final.Activities.Modals.Options
 import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Adapteres.OptionsViewHolder
@@ -34,10 +39,14 @@ import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_your_streams.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class YourStreams : AppCompatActivity() {
+
+class YourStreams : AppCompatActivity(), BottomSheetDialogContainer.BottomSheetListener {
 
     lateinit var callbackManager: CallbackManager
     lateinit var shareDialog: ShareDialog
@@ -51,6 +60,8 @@ class YourStreams : AppCompatActivity() {
     }
 
     private fun initall() {
+
+        place_bet_button_Listener()
 
         received_stamp=intent.getStringExtra("stamp")
         options_Query = FirebaseChecker().homeRef_Streams.child(received_stamp).child("options")
@@ -66,9 +77,8 @@ class YourStreams : AppCompatActivity() {
             builder.setTitle("How do you want to share this to your friends?")
             builder.setPositiveButton("Others",
                 DialogInterface.OnClickListener { dialog, which ->
-                    FirebaseChecker().load_selected_Streamer_Stream(received_stamp){
+                    FirebaseChecker().load_selected_Streamer_Stream(received_stamp) {
                         if (it.exists()) {
-
                             var strAppLink = ""
                             val appPackageName = getPackageName();
                             strAppLink = try {
@@ -80,7 +90,8 @@ class YourStreams : AppCompatActivity() {
                             val title = it.child("title").value.toString()
                             val mybet = it.child("contribution").value.toString()
 
-                            var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${received_stamp}"
+                            var bettmessage =
+                                "Join My Bet!!\nTitle: $title\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${received_stamp}"
 
                             val a = Intent(Intent.ACTION_SEND)
                             // this is the sharing part
@@ -99,38 +110,73 @@ class YourStreams : AppCompatActivity() {
                 })
             builder.setNegativeButton("Facebook",
                 DialogInterface.OnClickListener { dialog, which ->
-                    shareDialog.registerCallback(callbackManager, object :
-                        FacebookCallback<Sharer.Result> {
-                        override fun onSuccess(result: Sharer.Result?) {
-                            makeLongToast("Your Stream was shared to Facebook")
-                        }
-                        override fun onCancel() {
-                            makeLongToast("Sharing Cancelled")
-                        }
-                        override fun onError(error: FacebookException?) {
-                            makeLongToast(error?.message.toString())
-                        }
-                    })
+                    FirebaseChecker().load_selected_Streamer_Stream(received_stamp) {
+                        if (it.exists()) {
+                            var strAppLink = ""
+                            val appPackageName = getPackageName();
+                            strAppLink = try {
+                                "https://play.google.com/store/apps/details?id=$appPackageName"
+                            } catch (anfe: ActivityNotFoundException) {
+                                "https://play.google.com/store/apps/details?id=$appPackageName"
+                            }
 
-                    val linkContent = ShareLinkContent.Builder()
-                        .setQuote("Facebook Share API Test Link - Random")
-                        //.setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${firebaseAuth.currentUser.uid}"))
-                        .setContentUrl(Uri.parse("https://www.google.com/"))
-                        .build()
+                            val title = it.child("title").value.toString()
+                            val mybet = it.child("contribution").value.toString()
 
-                    if (ShareDialog.canShow(ShareLinkContent::class.java)) {
-                        shareDialog.show(linkContent)
-                    } else {
-                        makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                            val message =
+                                "Join My Bet!!\nTitle: $title\nGet Stream App: $strAppLink\nMy Bet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${received_stamp}"
+
+                            shareDialog.registerCallback(callbackManager, object :
+                                FacebookCallback<Sharer.Result> {
+                                override fun onSuccess(result: Sharer.Result?) {
+                                    makeLongToast("Your Stream was shared to Facebook")
+                                }
+
+                                override fun onCancel() {
+                                    makeLongToast("Sharing Cancelled")
+                                }
+
+                                override fun onError(error: FacebookException?) {
+                                    makeLongToast(error?.message.toString())
+                                }
+                            })
+
+                            val linkContent = ShareLinkContent.Builder()
+                                .setQuote(message)
+                                .setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${received_stamp}"))
+                                .build()
+
+                            if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                                shareDialog.show(linkContent)
+                            } else {
+                                makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                            }
+                            dialog.dismiss()
+                        }
                     }
-                    dialog.dismiss()
                 })
-            builder.setNeutralButton("Dismiss", null)
             // Create and show the alert dialog
             val dialog = builder.create()
             dialog.show()
         }
+    }
 
+    private fun place_bet_button_Listener() {
+        place_bet_button.setOnClickListener {
+            Constants.selected_id = received_stamp
+            val bottomSheet = BottomSheetDialogContainer()
+            val metrics = DisplayMetrics()
+            val bundle = Bundle()
+            bundle.putString("key", received_stamp)
+            bottomSheet.arguments = bundle
+            CoroutineScope(Dispatchers.IO).launch {
+                windowManager?.defaultDisplay?.getMetrics(metrics)
+                if (Constants.loaded == false) {
+                    bottomSheet.show(supportFragmentManager, received_stamp)
+                    Constants.loaded = true
+                }
+            }
+        }
     }
 
     private fun initialize_Facebook() {
@@ -145,10 +191,13 @@ class YourStreams : AppCompatActivity() {
                 showAlertDialog("You have to select the answer first")
             } else {
                 //Let us play around with the time first
-                FirebaseDatabase.getInstance().getReference().child("streams").child(received_stamp).child("cashday").addListenerForSingleValueEvent(object: ValueEventListener{
+                FirebaseDatabase.getInstance().getReference().child("streams").child(received_stamp).child(
+                    "cashday"
+                ).addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
                         makeLongToast("Error Occured: ${error.message}")
                     }
+
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.exists()) {
                             val the_cash_day = snapshot.value.toString()
@@ -165,14 +214,21 @@ class YourStreams : AppCompatActivity() {
                                 showAlertDialog("You set the Cash Day on ${final_cash_day}, You can close this Stream only on or after this date, contact us for help")
                             } else {
                                 //Insert the answer to db first
-                                FirebaseChecker().homeRef_Streams.child(received_stamp).child("answer").setValue(
-                                    chosen_Answer).addOnCompleteListener {
+                                FirebaseChecker().homeRef_Streams.child(received_stamp)
+                                    .child("answer").setValue(
+                                    chosen_Answer
+                                ).addOnCompleteListener {
                                     if (it.isComplete) {
-                                        FirebaseDatabase.getInstance().getReference().child("streams").child(firebaseAuth.currentUser.uid).child("stamp")
-                                            .addListenerForSingleValueEvent(object : ValueEventListener {
+                                        FirebaseDatabase.getInstance().getReference()
+                                            .child("streams").child(
+                                            firebaseAuth.currentUser.uid
+                                        ).child("stamp")
+                                            .addListenerForSingleValueEvent(object :
+                                                ValueEventListener {
                                                 override fun onCancelled(error: DatabaseError) {
                                                     makeLongToast(error.message)
                                                 }
+
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     val one = snapshot.value.toString()
                                                     close_The_Stream(one, chosen_Answer)
@@ -193,9 +249,10 @@ class YourStreams : AppCompatActivity() {
         }
     }
 
-    private fun close_The_Stream(one: String,  chosenAnswer: String) {
+    private fun close_The_Stream(one: String, chosenAnswer: String) {
         FirebaseDatabase.getInstance().getReference().child("manage").child(received_stamp).child("manage").setValue(
-            received_stamp).addOnCompleteListener {
+            received_stamp
+        ).addOnCompleteListener {
             if (it.isComplete) {
                 FirebaseChecker().homeRef_Streams.child(received_stamp).child("remove").setValue("remove").addOnCompleteListener {
                     if (it.isComplete) {
@@ -217,13 +274,14 @@ class YourStreams : AppCompatActivity() {
         mManager.orientation = RecyclerView.HORIZONTAL
         recycler_view_options_profile.setLayoutManager(mManager)
 
-        options_Query.addValueEventListener(object: ValueEventListener{
+        options_Query.addValueEventListener(object : ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
             }
+
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (!snapshot.exists() or  !snapshot.hasChildren()) {
+                if (!snapshot.exists() or !snapshot.hasChildren()) {
                     recycler_view_options_profile.visibility = View.GONE
-                }else {
+                } else {
                     recycler_view_options_profile.visibility = View.VISIBLE
                 }
             }
@@ -239,13 +297,19 @@ class YourStreams : AppCompatActivity() {
 
     private fun loadFirebaseAdapter() {
         // Instantiate Paging Adapter
-        Constants.mAdapter_Options = object : FirebaseRecyclerPagingAdapter<Options, OptionsViewHolder>(Constants.options_Second) {
+        Constants.mAdapter_Options = object : FirebaseRecyclerPagingAdapter<Options, OptionsViewHolder>(
+            Constants.options_Second
+        ) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OptionsViewHolder {
                 val view = layoutInflater.inflate(R.layout.options_display_layout, parent, false)
                 return OptionsViewHolder(view)
             }
 
-            override fun onBindViewHolder(viewHolder: OptionsViewHolder, position: Int, options: Options) {
+            override fun onBindViewHolder(
+                viewHolder: OptionsViewHolder,
+                position: Int,
+                options: Options
+            ) {
                 val databaseRerence = getRef(position)
                 viewHolder.bind(options, databaseRerence, viewHolder, this@YourStreams, null)
             }
@@ -266,61 +330,73 @@ class YourStreams : AppCompatActivity() {
     private fun view_all_betters_text_Click() {
         yourallbets.setSafeOnClickListener {
             val intent = Intent(this, ActivityForViewingAllTheBetters::class.java)
-            intent.putExtra("access",  received_stamp)
+            intent.putExtra("access", received_stamp)
             startActivity(intent)
         }
     }
 
     private fun load_Active_Stream_Information() {
 
-        FirebaseDatabase.getInstance().reference.child("ids").child(firebaseAuth.currentUser.uid).addListenerForSingleValueEvent(object: ValueEventListener{
-                    override fun onCancelled(error: DatabaseError) {
-                        makeLongToast("Error: ${error.message}")
+        FirebaseDatabase.getInstance().reference.child("ids").child(firebaseAuth.currentUser.uid).addListenerForSingleValueEvent(
+            object : ValueEventListener {
+                override fun onCancelled(error: DatabaseError) {
+                    makeLongToast("Error: ${error.message}")
+                }
+
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists() && snapshot.hasChildren()) {
+
+                        FirebaseDatabase.getInstance().reference.child("streams").child(
+                            received_stamp
+                        ).addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onCancelled(error: DatabaseError) {
+                                makeLongToast("Error: ${error.message}")
+                            }
+
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                if (snapshot.exists() && snapshot.hasChildren()) {
+
+                                    val title = snapshot.child("title").value.toString()
+                                    val description =
+                                        snapshot.child("description").value.toString()
+                                    val cashday = snapshot.child("cashday").value.toString()
+                                    val lastday = snapshot.child("lastday").value.toString()
+                                    val type = snapshot.child("type").value.toString()
+                                    val contribution =
+                                        snapshot.child("contribution").value.toString()
+                                    val numberOfBetters =
+                                        ((snapshot.child("bets").childrenCount.toInt())).toString()
+
+                                    val formatter =
+                                        SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+                                    val actualcashday: Date = formatter.parse(cashday)
+                                    val actuallastday: Date = formatter.parse(lastday)
+
+                                    yourdescription.setText(description)
+                                    youtitle.setText(title)
+                                    yourdue.setText("Due: $actuallastday")
+                                    yourpaymenton.setText("Payment $actualcashday")
+                                    yourbetters.setText("Betters\n$numberOfBetters")
+                                    yourContribution.setText("Your Bet:\nKes: $contribution")
+                                    yourstreamtype.setText("Type:\n$type")
+
+                                    total_amount_in_Stream(
+                                        snapshot.child("contribution").value.toString()
+                                            .toInt()
+                                    )
+
+                                } else {
+                                    makeLongToast("This stream is missing")
+                                    finish()
+                                }
+                            }
+                        })
+                    } else {
+                        makeLongToast("You have no active streams")
+                        finish()
                     }
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.exists() && snapshot.hasChildren()) {
-
-                            FirebaseDatabase.getInstance().reference.child("streams").child(received_stamp).addListenerForSingleValueEvent(object: ValueEventListener{
-                                        override fun onCancelled(error: DatabaseError) {
-                                            makeLongToast("Error: ${error.message}")
-                                        }
-                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                            if (snapshot.exists() && snapshot.hasChildren()) {
-
-                                                val title = snapshot.child("title").value.toString()
-                                                val description = snapshot.child("description").value.toString()
-                                                val cashday = snapshot.child("cashday").value.toString()
-                                                val lastday = snapshot.child("lastday").value.toString()
-                                                val type = snapshot.child("type").value.toString()
-                                                val contribution = snapshot.child("contribution").value.toString()
-                                                val numberOfBetters = ((snapshot.child("bets").childrenCount.toInt())).toString()
-
-                                                val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-                                                val actualcashday: Date = formatter.parse(cashday)
-                                                val actuallastday: Date = formatter.parse(lastday)
-
-                                                yourdescription.setText(description)
-                                                youtitle.setText(title)
-                                                yourdue.setText("Due: $actuallastday")
-                                                yourpaymenton.setText("Payment $actualcashday")
-                                                yourbetters.setText("Betters\n$numberOfBetters")
-                                                yourContribution.setText("Your Bet:\nKes: $contribution")
-                                                yourstreamtype.setText("Type:\n$type")
-
-                                                total_amount_in_Stream(snapshot.child("contribution").value.toString().toInt())
-
-                                            } else {
-                                                makeLongToast("This stream is missing")
-                                                finish()
-                                            }
-                                        }
-                                    })
-                        } else {
-                            makeLongToast("You have no active streams")
-                            finish()
-                        }
-                    }
-                })
+                }
+            })
     }
 
     private fun total_amount_in_Stream(streamer_amount: Int) {
@@ -335,6 +411,16 @@ class YourStreams : AppCompatActivity() {
         }
     }
 
+    fun isPackageExisted(targetPackage: String?): Boolean {
+        val pm: PackageManager = packageManager
+        try {
+            val info: PackageInfo = pm.getPackageInfo(targetPackage, PackageManager.GET_META_DATA)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+        return true
+    }
+
     override fun onStart() {
         super.onStart()
         Constants.mAdapter_Options.startListening()
@@ -343,5 +429,9 @@ class YourStreams : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         Constants.mAdapter_Options.stopListening()
+    }
+
+    override fun onButtonClicked(text: String?) {
+        //Do nothing
     }
 }

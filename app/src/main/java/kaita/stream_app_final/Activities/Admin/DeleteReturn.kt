@@ -1,9 +1,10 @@
 package kaita.stream_app_final.Activities.Admin
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -13,6 +14,7 @@ import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.activity_delete_return.*
+
 
 class DeleteReturn : AppCompatActivity() {
 
@@ -101,10 +103,10 @@ class DeleteReturn : AppCompatActivity() {
 
     fun sendSMS(phoneNo: String?, msg: String?) {
         try {
-            val smsManager: SmsManager = SmsManager.getDefault()
-            smsManager.sendTextMessage(phoneNo, null, msg, null, null)
-            makeLongToast("Message was sent")
-            return_editText.setText("")
+            val uri = Uri.parse("smsto:$phoneNo")
+            val intent = Intent(Intent.ACTION_SENDTO, uri)
+            intent.putExtra("sms_body", "$msg")
+            startActivity(intent)
         } catch (ex: Exception) {
             makeLongToast(ex.message.toString())
         }

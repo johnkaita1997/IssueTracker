@@ -51,7 +51,6 @@ class LearnHowItWorks : AppCompatActivity() {
                 }
             })
         }
-
     }
 
     private fun load_how_To_Bet_Text_From_The_Db() {

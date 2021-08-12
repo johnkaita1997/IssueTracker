@@ -50,7 +50,6 @@ class HomeFragment : Fragment(){
     }
 
     private fun initall() {
-
         set_Focus_To_Create_Stream_Button()
         loadcategories()
         alertDialog = AlertDialog.Builder(requireContext()).create()
@@ -160,7 +159,8 @@ class HomeFragment : Fragment(){
                                 requireActivity().goToActivity_Unfinished(requireActivity(), PostActivity::class.java)
                             }
                             if (!alertDialog.isShowing) {
-                                requireActivity().showAlertDialog_Special( alertDialog,"No Data","No matching streams, would you like to create one","Proceed",::goToCreate_Stream)
+                                //requireActivity().showAlertDialog_Special( alertDialog,"No Data","No matching streams, would you like to create one","Proceed",::goToCreate_Stream)
+                                requireActivity().makeLongToast("No matching streams.")
                             }
                         }
                     }
@@ -171,7 +171,7 @@ class HomeFragment : Fragment(){
 
         source.swipeRefreshLayout_Optionswow.setOnRefreshListener {
             source.swipeRefreshLayout_Optionswow.isRefreshing = true
-            val query = database.collection("streams");
+            val query = database.collection("streams").orderBy("stamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
             val options = FirestorePagingOptions.Builder<Post>()
                 .setQuery(query, Constants.config, Post::class.java)
                 .build()

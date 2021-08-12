@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_marginBottom="10dp"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="0dp"
     android:layout_marginTop="20dp"
@@ -14,6 +15,18 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="2">
+
+        <TextView
+            android:gravity="center_horizontal"
+            android:id="@+id/better_date"
+            android:layout_width="match_parent"
+            android:paddingTop="5dp"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_gravity="center"
+            android:text="The Bet Date"
+            android:textColor="@color/black"
+            android:textSize="13dp" />
 
         <LinearLayout
             android:paddingVertical="10dp"
@@ -34,7 +47,6 @@
                 android:text="The Option Value"
                 android:textColor="@color/black"
                 android:textSize="13dp" />
-
 
             <TextView
                 android:id="@+id/better_amount"

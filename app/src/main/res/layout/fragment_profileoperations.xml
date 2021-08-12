@@ -23,7 +23,7 @@
         android:paddingTop="10dp"
         android:id="@+id/list"
         android:layout_width="wrap_content"
-        android:layout_height="150dp"
+        android:layout_height="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.573"
         app:layout_constraintStart_toStartOf="parent"

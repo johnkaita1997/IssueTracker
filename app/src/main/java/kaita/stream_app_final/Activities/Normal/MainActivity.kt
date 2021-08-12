@@ -1,5 +1,6 @@
 package kaita.stream_app_final.Activities.Normal
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -10,7 +11,10 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.SearchView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
@@ -26,11 +30,12 @@ import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment.OnButtonClickListener
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException
 import com.onesignal.OneSignal
+import com.paypal.android.sdk.payments.PaymentActivity
+import com.paypal.android.sdk.payments.PaymentConfirmation
 import kaita.stream_app_final.Activities.Authentication.SignUpActivity
 import kaita.stream_app_final.Activities.BottomSheet.BottomSheetDialogContainer
-import kaita.stream_app_final.Adapteres.CustomAdapter
-import kaita.stream_app_final.Adapteres.FirebaseChecker
-import kaita.stream_app_final.Adapteres.Model
+import kaita.stream_app_final.Adapteres.*
+import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.alertDialog
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
 import kaita.stream_app_final.AppConstants.Constants.loaded
@@ -45,17 +50,20 @@ import kotlinx.android.synthetic.main.layout_bottom_navigation_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheetListener {
 
-    var arrayList_details: ArrayList<Model> = ArrayList();
     private lateinit var obj_adapter: CustomAdapter
     val mAth = FirebaseAuth.getInstance()
     private lateinit var listener: SlideDateTimeListener
     private lateinit var alert: AlertDialog.Builder
     private lateinit var dateTimeDialogFragment: SwitchDateTimeDialogFragment
+    private lateinit var ualert: AlertDialog.Builder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,13 +82,13 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
         dateTimeDialogFragment.minimumDateTime = GregorianCalendar(2015, Calendar.JANUARY, 1).time
         dateTimeDialogFragment.maximumDateTime = GregorianCalendar(2025, Calendar.DECEMBER, 31).time
         dateTimeDialogFragment.setDefaultDateTime(
-            GregorianCalendar(
-                2017,
-                Calendar.MARCH,
-                4,
-                15,
-                20
-            ).time
+                GregorianCalendar(
+                        2017,
+                        Calendar.MARCH,
+                        4,
+                        15,
+                        20
+                ).time
         )
         // Define new day and month format
         try {
@@ -121,6 +129,8 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
 
                 FirebaseChecker().load_selected_Streamer_Stream(theid) {
                     if (it.exists() && it.hasChildren()) {
+                        selected_id = theid
+
                         val bottomSheet = BottomSheetDialogContainer()
                         val metrics = DisplayMetrics()
 
@@ -146,23 +156,9 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
             }
 
         } else {
-            /*
-               GMailSender.withAccount("kenyamessagesolution@gmail.com", "edwardangie")
-                   .withTitle("Stream App")
-                   .withBody("Working")
-                   .withSender(getString(R.string.app_name))
-                   .toEmailAddress("kenyastreamed@gmail.com") // one or multiple addresses separated by a comma
-                   .withListenner(object : GmailListener {
-                       override fun sendSuccess() {
-                           makeLongToast("Success")
-                       }
-                       override fun sendFail(err: String) {
-                           makeLongToast(err)
-                       }
-                   })
-                   .send()*/
-
-            check_if_user_has_agreed_to_the_Terms_Of_Service()
+            /*if (FirebaseAuth.getInstance().currentUser != null) {
+                check_if_user_has_agreed_to_the_Terms_Of_Service()
+            }*/
         }
     }
 
@@ -186,46 +182,40 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
         agree_HashMap["agreed"] = "Agreed"
         agree_HashMap["agreed_Date"] = currentDate.toString()
 
-            alert.setTitle("Terms Of Service")
-            alert.setCancelable(false)
-            alert.setMessage("To continue using Stream, Accept Its Terms And Services")
-            alert.setIcon(R.drawable.mainicon)
-            alert.setPositiveButton("I AGREE",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    dialog.dismiss()
-                    FirebaseDatabase.getInstance().reference.child("users").child(firebaseAuth.currentUser.uid).child("agreed").push().setValue(agree_HashMap).addOnCompleteListener {
-                        if (it.isSuccessful) {
-                            makeLongToast("Successful")
-                        } else {
-                            makeLongToast("Error: ${it.exception.toString()}")
-                        }
-                    }
-                })
-
-            alert.setNegativeButton("Dismiss",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    dialog.dismiss()
-                    System.exit(0)
-                })
-            alert.setNeutralButton("Terms",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    load_The_Url()
-                })
-             alert.show()
+        alert.setTitle("Terms Of Service")
+        alert.setCancelable(false)
+        alert.setMessage("To continue using Stream, Accept Its Terms And Services")
+        alert.setIcon(R.drawable.mainicon)
+        alert.setPositiveButton("I Agree",
+                                DialogInterface.OnClickListener { dialog, _ ->
+                                    dialog.dismiss()
+                                    FirebaseDatabase.getInstance().reference.child("users").child(firebaseAuth.currentUser.uid).child("agreed").push().setValue(agree_HashMap).addOnCompleteListener {
+                                        if (it.isSuccessful) {
+                                            makeLongToast("Successful")
+                                        } else {
+                                            makeLongToast("Error: ${it.exception.toString()}")
+                                        }
+                                    }
+                                })
+        alert.setNegativeButton("Terms",
+                                DialogInterface.OnClickListener { dialog, _ ->
+                                    load_The_Url()
+                                })
+        alert.show()
     }
 
     private fun load_The_Url() {
-        FirebaseDatabase.getInstance().reference.child("credentials").child("termsofservice").addListenerForSingleValueEvent(object:
-            ValueEventListener {
+        FirebaseDatabase.getInstance().reference.child("credentials").child("termsofservice").addListenerForSingleValueEvent(object :
+                                                                                                                                     ValueEventListener {
             override fun onCancelled(error: DatabaseError) {
                 makeLongToast("Error: ${error.message}")
             }
+
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val url = snapshot.value.toString()
                     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                     startActivity(browserIntent)
-
                 } else {
                     makeLongToast("Url Credential Missing")
                 }
@@ -239,26 +229,27 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
             if (it != null) {
                 runOnUiThread {
                     val ref = FirebaseDatabase.getInstance().reference.child("removetags")
-                    ref.addListenerForSingleValueEvent(object: ValueEventListener{
-                                override fun onCancelled(error: DatabaseError) {
-                                    makeLongToast("Error: ${error.message}")
-                                }
-                                override fun onDataChange(snapshot: DataSnapshot) {
-                                    if (snapshot.exists()) {
-                                        for (value in snapshot.children) {
-                                            val thetag = value.child("tag").value.toString()
-                                            for (value in it.keys()) {
-                                                val signal_Tag = value.toString()
-                                                if (signal_Tag.equals(thetag)) {
-                                                    OneSignal.deleteTag(signal_Tag);
-                                                }
-                                            }
+                    ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onCancelled(error: DatabaseError) {
+                            makeLongToast("Error: ${error.message}")
+                        }
+
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                for (value in snapshot.children) {
+                                    val thetag = value.child("tag").value.toString()
+                                    for (value in it.keys()) {
+                                        val signal_Tag = value.toString()
+                                        if (signal_Tag.equals(thetag)) {
+                                            OneSignal.deleteTag(signal_Tag);
                                         }
-                                    } else {
-                                        //makeLongToast("Error!, missing info.")
                                     }
                                 }
-                            })
+                            } else {
+                                //makeLongToast("Error!, missing info.")
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -288,11 +279,12 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
                 .child(firebaseAuth.currentUser.uid)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
+                        makeLongToast(error.message.toString())
                     }
 
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (snapshot.child("admin").exists()) {
-                            OneSignal.sendTag("User_ID", "admin")
+                            OneSignal.sendTag("admin", "admin")
                         }
                     }
                 })
@@ -316,6 +308,8 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
         menuInflater.inflate(R.menu.dottedmenu, menu)
 
         val searchItem = menu?.findItem(R.id.search)
+        val fragmentcheck = supportFragmentManager.findFragmentById(R.id.home)
+
         val searchView: SearchView = searchItem!!.actionView as SearchView
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -324,9 +318,7 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-
-                val fragment: HomeFragment =
-                    supportFragmentManager.findFragmentById(R.id.fragment_container) as HomeFragment
+                val fragment: HomeFragment = supportFragmentManager.findFragmentById(R.id.fragment_container) as HomeFragment
                 fragment.callAboutUsActivity(newText.toString())
                 return false
             }
@@ -390,32 +382,142 @@ class MainActivity : AppCompatActivity(), BottomSheetDialogContainer.BottomSheet
 
     override fun onStart() {
         super.onStart()
+        check_if_user_has_agreed_to_the_Terms_Of_Service()
     }
 
     override fun onButtonClicked(text: String?) {
-        showAlertDialog("CLicked")
+        //showAlertDialog("CLicked")
     }
 
     override fun onBackPressed() {
-        fun leaveApp() {
-            finish()
-        }
-        if (!alertDialog.isShowing) {
-            showAlertDialog_Special(
-                alertDialog,
-                "Exit",
-                "Are you sure you want to exit?",
-                "Proceed",
-                ::leaveApp
-            )
-        }
+        val alert = AlertDialog.Builder(this)
+            .setTitle("Stream")
+            .setCancelable(false)
+            .setMessage("Are you sure you want to exit")
+            .setIcon(R.drawable.mainicon)
+            .setPositiveButton("Exit", DialogInterface.OnClickListener { dialog, _ ->
+                dialog.dismiss()
+                finish()
+            })
+            .setNegativeButton("Dismis", DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() })
+            .show()
     }
 
     override fun onResume() {
         super.onResume()
-        check_if_user_has_agreed_to_the_Terms_Of_Service()
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Constants.PAYPAL_REQUEST_CODE) {
+            // If the result is OK i.e. user has not canceled the payment
+            if (resultCode == Activity.RESULT_OK) {
+                // Getting the payment confirmation
+                val confirm : PaymentConfirmation = data!!.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                // if confirmation is not null
+                if (confirm != null) {
+                    try {
+                        // Getting the payment details
+                        val paymentDetails = confirm.toJSONObject().toString(4);
+                        // on below line we are extracting json response and displaying it in a text view.
+                        val payObj =  JSONObject(paymentDetails);
+                        val payID = payObj.getJSONObject("response").getString("id");
+                        val state = payObj.getJSONObject("response").getString("state");
+                        makeLongToast("Payment " + state + "\n with payment id is " + payID)
+
+                        finish_UP_Bet()
+
+                    } catch (e: JSONException) {
+                        // handling json exception on below line
+                        makeLongToast(e.message.toString())
+                    }
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // on below line we are checking the payment status.
+                makeLongToast("Payment Cancelled")
+            } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+                // on below line when the invalid paypal config is submitted.
+                makeLongToast("An invalid Payment or PayPalConfiguration was submitted. Please see the docs.")
+            }
+        }
+    }
+
+    private fun finish_UP_Bet() {
+        if (Constants.thedatabaseReference != null) {
+            Constants.thedatabaseReference!!.setValue(Constants.hashMap_Selected_Bet_By_Better)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        FirebaseDatabase.getInstance().getReference()
+                            .child("bets").child(
+                                    Constants.firebaseAuth.currentUser.uid
+                            ).push().setValue(
+                                    Constants.hashMap_Selected_Bet_By_Better
+                            ).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    if (Constants.progressDialog.isShowing) {
+                                        Constants.progressDialog.dismiss()
+                                    }
+                                    showAlertDialog("Your bet was placed")
+                                    Constants.chosen_Answer = ""
+                                    sendNotification(selected_id, "One better joined bet")
+                                    Constants.hashMap_Selected_Bet_By_Better.clear()
+                                    Constants.thedatabaseReference.setValue(null)
+                                    Constants.thebetamount = ""
+                                    val reference =
+                                        FirebaseDatabase.getInstance().reference.child("users")
+                                            .child(Constants.firebaseAuth.currentUser.uid)
+                                            .child("betPay")
+                                    reference.removeValue()
+                                    FirebaseDatabase.getInstance().reference.child("keys")
+                                        .child(
+                                                selected_id
+                                        ).addListenerForSingleValueEvent(object :
+                                                                                                                     ValueEventListener {
+                                            override fun onCancelled(error: DatabaseError) {
+                                                makeLongToast("Error: ${error.message}")
+                                            }
+
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot.exists()) {
+                                                    val actual_id =
+                                                        snapshot.value.toString()
+                                                    if (actual_id.equals(
+                                                                Constants.firebaseAuth.currentUser.uid.toString()
+                                                        )
+                                                    ) {
+                                                        FirebaseDatabase.getInstance().reference.child(
+                                                                "streams"
+                                                        ).child(selected_id).child(
+                                                                "contribution"
+                                                        ).setValue(Constants.thebetamount)
+                                                    }
+                                                } else {
+                                                    makeLongToast("Error!, missing info.")
+                                                }
+                                            }
+                                        })
+
+                                    register_To_OneSignal()
+
+                                } else {
+                                    makeLongToast("An error occured")
+                                }
+                            }
+                    } else {
+                        showAlertDialog("Failed to place bet, ${it.exception.toString()}")
+                        Constants.hashMap_Selected_Bet_By_Better.clear()
+                        if (Constants.progressDialog.isShowing) {
+                            Constants.progressDialog.dismiss()
+                        }
+                    }
+                }
+        } else {
+            makeLongToast("Something went wrong")
+        }
+    }
+
+    private fun register_To_OneSignal() {
+        OneSignal.sendTag(selected_id, selected_id)
+    }
+
 }
-
-
-

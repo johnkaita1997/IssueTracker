@@ -14,3 +14,4 @@
 -keep class myjava.awt.datatransfer** {*;}
 -keep class org.apache.harmony.awt** {*;}
 -keep class org.apache.harmony.misc** {*;}
+

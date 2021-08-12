@@ -7,7 +7,9 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.firestore.paging.FirestorePagingAdapter
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.paypal.android.sdk.payments.PayPalConfiguration
 import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import dmax.dialog.SpotsDialog
@@ -32,15 +34,21 @@ import kaita.stream_app_final.Adapteres.ShowStreamList.StreamList
 import kaita.stream_app_final.Adapteres.ShowStreamList.StreamListViewHolder
 
 object Constants {
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //              PAGINATION START
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     val mPosts = 5 //The number of posts to be viewed on each screen
     val database: FirebaseFirestore = FirebaseFirestore.getInstance()
-
-
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //              Paypal START
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    val clientKey = "ARx3ElFHpFsAQibnzRpviaL63QZ4pmPzU1bUi3o1L6BvIPwtn0SU-CvtnODTSKWL9ecAVy1HKzJoMdEb"
+    val configd =  PayPalConfiguration()
+        // switch to sandbox (ENVIRONMENT_SANDBOX)
+        // or live (ENVIRONMENT_PRODUCTION)
+        .environment(PayPalConfiguration.ENVIRONMENT_SANDBOX)
+        .clientId(clientKey);
+    val PAYPAL_REQUEST_CODE = 123;
 
 
 
@@ -110,5 +118,8 @@ object Constants {
     var googleSignInClient: GoogleSignInClient? = null
     const val ONESIGNAL_APP_ID = "52a2c790-173c-4606-a0a6-941f3b4d58eb"
     lateinit var alertDialog: AlertDialog
+    lateinit var thedatabaseReference: DatabaseReference
+    lateinit var thebetamount: String
+    var alist = mutableListOf<String>()
 
 }

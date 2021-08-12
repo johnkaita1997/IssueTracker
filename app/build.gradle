@@ -23,8 +23,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         multiDexEnabled true
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 16
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders = [onesignal_app_id: "52a2c790-173c-4606-a0a6-941f3b4d58eb",
@@ -62,7 +62,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             debuggable false
             signingConfig signingConfigs.release
@@ -273,6 +273,8 @@ dependencies {
     implementation 'com.quinny898.library.persistentsearch:library:1.1.0-SNAPSHOT'
 
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
+
+    implementation 'com.paypal.sdk:paypal-android-sdk:2.14.2'
 }
 
 // ADD THIS AT THE BOTTOM

@@ -41,6 +41,7 @@
                 android:textColor="@color/black" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:paddingBottom="10dp"
                 android:id="@+id/expedting_Payment_RecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="678dp" />

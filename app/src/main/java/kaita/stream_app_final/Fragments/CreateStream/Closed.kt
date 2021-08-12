@@ -4,12 +4,15 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
@@ -35,6 +38,7 @@ import kaita.stream_app_final.Adapteres.CreatePost.CreatePostViewHolder
 import kaita.stream_app_final.Adapteres.FirebaseChecker
 import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants
+import kaita.stream_app_final.AppConstants.Constants.alist
 import kaita.stream_app_final.AppConstants.Constants.database
 import kaita.stream_app_final.AppConstants.Constants.fdpurl
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
@@ -46,9 +50,9 @@ import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
 import kotlinx.android.synthetic.main.fragment_closed.view.*
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
-
 
 class Closed : Fragment(){
 
@@ -86,21 +90,31 @@ class Closed : Fragment(){
             val last_day = (activity as PostActivity?)?.get_Last_Day().toString()
             val cash_day = (activity as PostActivity?)?.get_Cash_Day().toString()
 
+            // You can use any format to compare by spliting the dateTime
+            val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZZZZ")
+
+            val thelastday: String = last_day
+            val selectedlastday: Date = formatter.parse(thelastday)
+
+            val thecashday: String = cash_day
+            val selectedcashday: Date = formatter.parse(thecashday)
+
             val comparision = last_day.compareTo(cash_day)
 
             if (title == "" || description == "") {
-                requireActivity().showAlertDialog("Enter both the stream tittle and Stream description")
+                requireActivity().showAlertDialog("Enter both the stream subject and Stream description")
             } else if (joinnumber == "") {
                 requireActivity().showAlertDialog("Select the Max Number Of Streamers who can join your stream")
             } else if (last_day == "" || cash_day == "") {
                 requireActivity().showAlertDialog("Enter both the Last Day and Cash Out Day")
             } else if (hashmap_Abcd.size < 2 ) {
                 requireActivity().showAlertDialog("You need to enter at least 2 options")
-            } else if (comparision == 0) {
+            } else if (selectedcashday.compareTo(selectedlastday) < 0) {
+                requireActivity().makeLongToast("Last Voting should come before Cash Day")
+            }else if (comparision == 0) {
                 requireActivity().showAlertDialog("Cash day and final betting day can't be equal")
             }else {
                 popup = PopupMenu(requireActivity(), it)
-
                 //Load firebase menu now
                 FirebaseDatabase.getInstance().reference.child("categories").addListenerForSingleValueEvent(object: ValueEventListener{
                             override fun onCancelled(error: DatabaseError) {
@@ -144,8 +158,14 @@ class Closed : Fragment(){
                                             hashMap_Stream_Options["remove"] = "None"
                                             hashMap_Stream_Options["order"] = -1 * Date().getTime()
 
+                                            val formatter = SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z")
+                                            val date = Date(System.currentTimeMillis())
+                                            val good_Date = formatter.format(date)
+                                            hashMap_Stream_Options["postedon"] = good_Date.toString()
+
                                             do_Everything_DatabaseO_Related(currentTimestamp, title)
                                         }
+
                                         return false
                                     }
                                 })
@@ -165,7 +185,33 @@ class Closed : Fragment(){
     }
 
     private fun do_Everything_DatabaseO_Related(currentTimestamp: Long, title: String) {
-        actual_Database_Code(currentTimestamp, title)
+
+        val builderSingle = AlertDialog.Builder(requireActivity())
+        builderSingle.setIcon(R.drawable.mainicon)
+        builderSingle.setTitle("Confirm These Are The Options")
+        builderSingle.setCancelable(false)
+
+        //val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(requireActivity(), android.R.layout.select_dialog_singlechoice)
+        val arrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(requireActivity(), android.R.layout.simple_list_item_1)
+        hashmap_Abcd.forEach {
+            arrayAdapter.add("${it.key.capitalize()} -> ${it.value}")
+        }
+
+        builderSingle.setNegativeButton("Cancel") { dialog, which -> dialog.dismiss()
+        if (progressDialog.isShowing) {progressDialog.dismiss()}}
+        builderSingle.setPositiveButton("Proceed") { dialog, which -> dialog.dismiss()
+            actual_Database_Code(currentTimestamp, title)
+        }
+        builderSingle.setAdapter(arrayAdapter) { dialog, which ->
+           /* val strName: String = arrayAdapter.getItem(which).toString()
+            val builderInner = AlertDialog.Builder(requireActivity())
+            builderInner.setMessage(strName)
+            builderInner.setTitle("Your Selected Item is")
+            builderInner.setPositiveButton( "Ok") { dialog, which -> dialog.dismiss()
+            }
+            builderInner.show()*/
+        }
+        builderSingle.show()
     }
 
     private fun actual_Database_Code(currentTimestamp: Long, title: String) {
@@ -280,7 +326,6 @@ class Closed : Fragment(){
     }
 
     private fun empty_edit_Text_Values(currenttimestamp: String) {
-
         val stream_tittle = requireActivity().findViewById(R.id.stream_tittle) as EditText
         val stream_description = requireActivity().findViewById(R.id.stream_description) as EditText
         stream_description.setText("")
@@ -292,7 +337,7 @@ class Closed : Fragment(){
         if (progressDialog.isShowing) {progressDialog.dismiss()}
         // Set up the alert builder
         val builder: AlertDialog.Builder = AlertDialog.Builder(context)
-        builder.setTitle("Your stream was posted successfully. Share this Stream to your friends")
+        builder.setMessage("Your stream was posted successfully. To place a bet on it, visit Your Streams Page in the Profile Section. Share this Stream to your friends")
         builder.setPositiveButton("Others",
             DialogInterface.OnClickListener { dialog, which ->
                 FirebaseChecker().load_selected_Streamer_Stream(currenttimestamp){
@@ -308,8 +353,8 @@ class Closed : Fragment(){
                         val title = it.child("title").value.toString()
                         val mybet = it.child("contribution").value.toString()
 
-                        var bettmessage = "Lets bet now !!\nTitle: $title\nMy Bet: $mybet\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${selected_id}"
-
+                        var bettmessage = "Join My Bet !!\nTitle: $title\nGet Stream App: $strAppLink\nBet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${currenttimestamp.toString()}"
+                        requireActivity().finish()
                         val a = Intent(Intent.ACTION_SEND)
                         // this is the sharing part
                         a.type = "text/link"
@@ -318,7 +363,6 @@ class Closed : Fragment(){
                         a.putExtra(Intent.EXTRA_SUBJECT, shareSub)
                         a.putExtra(Intent.EXTRA_TEXT, shareBody)
                         startActivity(Intent.createChooser(a, "Share Using"))
-                        requireActivity().finish()
 
                     } else {
                         requireActivity().makeLongToast("Important information missing")
@@ -328,40 +372,63 @@ class Closed : Fragment(){
             })
         builder.setNegativeButton("Facebook",
             DialogInterface.OnClickListener { dialog, which ->
-                shareDialog.registerCallback(callbackManager, object :
-                    FacebookCallback<Sharer.Result> {
-                    override fun onSuccess(result: Sharer.Result?) {
-                        requireActivity().makeLongToast("Your Stream was shared to Facebook")
-                    }
-                    override fun onCancel() {
-                        requireActivity().makeLongToast("Sharing Cancelled")
-                    }
-                    override fun onError(error: FacebookException?) {
-                        requireActivity().makeLongToast(error?.message.toString())
-                    }
-                })
+                FirebaseChecker().load_selected_Streamer_Stream(currenttimestamp) {
+                    if (it.exists()) {
+                        var strAppLink = ""
+                        val appPackageName = requireActivity().packageName
+                        strAppLink = try {
+                            "https://play.google.com/store/apps/details?id=$appPackageName"
+                        } catch (anfe: ActivityNotFoundException) {
+                            "https://play.google.com/store/apps/details?id=$appPackageName"
+                        }
 
-                val linkContent = ShareLinkContent.Builder()
-                    .setQuote("Facebook Share API Test Link - Random")
-                    //.setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${firebaseAuth.currentUser.uid}"))
-                    .setContentUrl(Uri.parse("https://www.google.com/"))
-                    .build()
+                        val title = it.child("title").value.toString()
+                        val mybet = it.child("contribution").value.toString()
 
-                if (ShareDialog.canShow(ShareLinkContent::class.java)) {
-                    shareDialog.show(linkContent)
-                } else {
-                    requireActivity().makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                        val message = "Join My Bet!!\nTitle: $title\nGet Stream App: $strAppLink\nMy Bet Link: https://www.worldstream.co.ke/streamed/joinbet.php?id=${currenttimestamp}"
+
+                        shareDialog.registerCallback(callbackManager, object :
+                            FacebookCallback<Sharer.Result> {
+                            override fun onSuccess(result: Sharer.Result?) {
+                                requireActivity().makeLongToast("Your Stream was shared to Facebook")
+                            }
+                            override fun onCancel() {
+                                requireActivity().makeLongToast("Sharing Cancelled")
+                            }
+                            override fun onError(error: FacebookException?) {
+                                requireActivity().makeLongToast(error?.message.toString())
+                            }
+                        })
+
+                        val linkContent = ShareLinkContent.Builder()
+                            .setQuote(message)
+                            .setContentUrl(Uri.parse("https://www.worldstream.co.ke/streamed/joinbet.php?id=${selected_id}"))
+                            .build()
+
+                        if (ShareDialog.canShow(ShareLinkContent::class.java)) {
+                            shareDialog.show(linkContent)
+                        } else {
+                            requireActivity().makeLongToast("Ensure you have the Facebook App installed to share this Stream")
+                        }
+                        dialog.dismiss()
+                    }
                 }
-                dialog.dismiss()
             })
-        builder.setNeutralButton("Dismiss", DialogInterface.OnClickListener { dialog, which ->
-            dialog.dismiss()
-            requireActivity().finish()
-        } )
         // Create and show the alert dialog
         val dialog: AlertDialog = builder.create()
         dialog.show()
 
+    }
+
+
+    fun isPackageExisted(targetPackage: String?): Boolean {
+        val pm: PackageManager = requireActivity().packageManager
+        try {
+            val info: PackageInfo = pm.getPackageInfo(targetPackage, PackageManager.GET_META_DATA)
+        } catch (e: PackageManager.NameNotFoundException) {
+            return false
+        }
+        return true
     }
 
     private fun load_Alphabets() {
@@ -375,7 +442,6 @@ class Closed : Fragment(){
         val options: FirebaseRecyclerOptions<CreatePost?> = FirebaseRecyclerOptions.Builder<CreatePost>()
             .setQuery(peopleReference, CreatePost::class.java)
             .build()
-
         Constants.createPostAdapter = object : FirebaseRecyclerAdapter<CreatePost, CreatePostViewHolder>(options) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CreatePostViewHolder {
                 val view: View = LayoutInflater.from(parent.context).inflate(R.layout.recycler_create_post, parent, false)
@@ -399,5 +465,6 @@ class Closed : Fragment(){
             Constants.createPostAdapter.stopListening();
         }
         Constants.chosen_Answer = ""
+        alist.clear()
     }
 }

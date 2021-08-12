@@ -1,5 +1,7 @@
 package kaita.stream_app_final.Fragments.BottomSheetFragments
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,7 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.onesignal.OneSignal
+import com.paypal.android.sdk.payments.PaymentActivity
+import com.paypal.android.sdk.payments.PaymentConfirmation
 import com.shreyaspatil.firebase.recyclerpagination.DatabasePagingOptions
 import com.shreyaspatil.firebase.recyclerpagination.FirebaseRecyclerPagingAdapter
 import com.shreyaspatil.firebase.recyclerpagination.LoadingState
@@ -23,9 +29,14 @@ import kaita.stream_app_final.Adapteres.*
 import kaita.stream_app_final.AppConstants.Constants
 import kaita.stream_app_final.AppConstants.Constants.chosen_Answer
 import kaita.stream_app_final.AppConstants.Constants.selected_id
+import kaita.stream_app_final.AppConstants.Constants.thebetamount
+import kaita.stream_app_final.AppConstants.Constants.thedatabaseReference
+import kaita.stream_app_final.Extensions.makeLongToast
+import kaita.stream_app_final.Extensions.showAlertDialog
 import kaita.stream_app_final.R
-import kotlinx.android.synthetic.main.fragment_all_bets.view.*
 import kotlinx.android.synthetic.main.fragment_bottom_home.view.*
+import org.json.JSONException
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -158,12 +169,14 @@ class BottomHomeFragment : Fragment() {
         FirebaseChecker().load_selected_Streamer_Stream(selected_id){
             if (it.exists() and it.hasChildren()) {
                 val description = it.child("description").value.toString()
+                val subject = it.child("title").value.toString()
                 val cashday = it.child("cashday").value.toString()
                 val lastday = it.child("lastday").value.toString()
                 val joinnumber = it.child("joinnumber").value.toString()
                 val dpurl = it.child("dpurl").value.toString()
                 val hostname = it.child("hostname").value.toString()
                 val paid = it.child("paid").value.toString()
+                val patadate = it.child("postedon").value.toString()
                 val type = it.child("type").value.toString()
                 val open: String = it.child("open:").value.toString()
 
@@ -175,16 +188,21 @@ class BottomHomeFragment : Fragment() {
                 val final_cash_day: Date = formatter.parse(cashday)
 
                 source.bottom_actual_Description.setText(description)
+                source.subject_tview.setText(subject)
 
                 source.bottom_due_on.setText("Bet Expiry: $final_last_day")
                 source.bottom_payment_on_text.setText("Cash Day $final_cash_day")
 
                 if (type == "Closed") {
-                    source.bottom_type.setText("Type: Closed - You can't add a betting option")
+                    //source.bottom_type.setText("Type: Closed - You can't add a betting option")
                     source.close_B.visibility == View.GONE
                 } else if (type == "Open") {
-                    source.bottom_type.setText("Type: Open - Enter your bet")
+                   // source.bottom_type.setText("Type: Open - Enter your bet")
                 }
+
+                // timestamp to Date
+
+                source.bottom_type.setText("Posted On : $patadate")
                 remove_Layout_If_Closed_Or_Open()
             }
         }
@@ -280,4 +298,115 @@ class BottomHomeFragment : Fragment() {
         chosen_Answer = ""
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.PAYPAL_REQUEST_CODE) {
+            // If the result is OK i.e. user has not canceled the payment
+            if (resultCode == Activity.RESULT_OK) {
+                // Getting the payment confirmation
+                val confirm : PaymentConfirmation = data!!.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
+                // if confirmation is not null
+                if (confirm != null) {
+                    try {
+                        // Getting the payment details
+                        val paymentDetails = confirm.toJSONObject().toString(4);
+                        // on below line we are extracting json response and displaying it in a text view.
+                        val payObj =  JSONObject(paymentDetails);
+                        val payID = payObj.getJSONObject("response").getString("id");
+                        val state = payObj.getJSONObject("response").getString("state");
+                        requireActivity().makeLongToast("Payment " + state + "\n with payment id is " + payID)
+
+                        finish_UP_Bet()
+
+                    } catch (e : JSONException) {
+                        // handling json exception on below line
+                        requireActivity().makeLongToast(e.message.toString())
+                    }
+                }
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // on below line we are checking the payment status.
+                requireActivity().makeLongToast("Payment Cancelled")
+            } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
+                // on below line when the invalid paypal config is submitted.
+                requireActivity().makeLongToast("An invalid Payment or PayPalConfiguration was submitted. Please see the docs.")
+            }
+        }
+    }
+
+    private fun finish_UP_Bet() {
+        if (thedatabaseReference != null) {
+            thedatabaseReference!!.setValue(Constants.hashMap_Selected_Bet_By_Better)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        FirebaseDatabase.getInstance().getReference()
+                            .child("bets").child(
+                                Constants.firebaseAuth.currentUser.uid
+                            ).push().setValue(
+                                Constants.hashMap_Selected_Bet_By_Better
+                            ).addOnCompleteListener {
+                                if (it.isSuccessful) {
+                                    if (Constants.progressDialog.isShowing) {
+                                        Constants.progressDialog.dismiss()
+                                    }
+                                    requireActivity().showAlertDialog("Your bet was placed")
+                                    chosen_Answer = ""
+                                    sendNotification(selected_id, "One better joined bet")
+                                    Constants.hashMap_Selected_Bet_By_Better.clear()
+                                    Constants.thedatabaseReference.setValue(null)
+                                    Constants.thebetamount = ""
+                                    val reference =
+                                        FirebaseDatabase.getInstance().reference.child("users")
+                                            .child(Constants.firebaseAuth.currentUser.uid)
+                                            .child("betPay")
+                                    reference.removeValue()
+                                    FirebaseDatabase.getInstance().reference.child("keys")
+                                        .child(
+                                            selected_id
+                                        ).addListenerForSingleValueEvent(object :
+                                            ValueEventListener {
+                                            override fun onCancelled(error: DatabaseError) {
+                                                requireActivity().makeLongToast("Error: ${error.message}")
+                                            }
+
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                if (snapshot.exists()) {
+                                                    val actual_id =
+                                                        snapshot.value.toString()
+                                                    if (actual_id.equals(
+                                                            Constants.firebaseAuth.currentUser.uid.toString()
+                                                        )
+                                                    ) {
+                                                        FirebaseDatabase.getInstance().reference.child(
+                                                            "streams"
+                                                        ).child(selected_id).child(
+                                                            "contribution"
+                                                        ).setValue(thebetamount)
+                                                    }
+                                                } else {
+                                                    requireActivity().makeLongToast("Error!, missing info.")
+                                                }
+                                            }
+                                        })
+
+                                    register_To_OneSignal()
+
+                                } else {
+                                    requireActivity().makeLongToast("An error occured")
+                                }
+                            }
+                    } else {
+                        requireActivity().showAlertDialog("Failed to place bet, ${it.exception.toString()}")
+                        Constants.hashMap_Selected_Bet_By_Better.clear()
+                        if (Constants.progressDialog.isShowing) {
+                            Constants.progressDialog.dismiss()
+                        }
+                    }
+                }
+        } else {
+            requireActivity().makeLongToast("Something went wrong")
+        }
+    }
+
+    private fun register_To_OneSignal() {
+        OneSignal.sendTag(selected_id, selected_id)
+    }
 }

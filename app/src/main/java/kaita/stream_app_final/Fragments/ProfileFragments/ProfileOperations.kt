@@ -30,8 +30,8 @@ class ProfileOperations : Fragment() {
     private lateinit var source: View
     private val countryNames = arrayOf("Your Streams", "Your Bets")
     private val imageid = arrayOf<Int>(
-        R.drawable.person,
-        R.drawable.personb
+        R.drawable.yourstreams,
+        R.drawable.yourbets
     )
 
     @Nullable

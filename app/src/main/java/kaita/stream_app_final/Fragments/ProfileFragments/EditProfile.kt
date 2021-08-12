@@ -69,15 +69,13 @@ class EditProfile : Fragment() {
             val name = edit_name.text.toString().trim()
             val email = edit_Email.text.toString().trim()
             val mobileNumber = edit_Mobile.text.toString().trim()
-            val idnumber = edit_idnumber.text.toString().trim()
+            val idnumber = "0000000000"
             if (name == "" || name == "None" || name == "null") {
-                activity?.makeLongToast("Enter your name")
+                activity?.makeLongToast("You can't leave name field blank")
             } else if (email == "" || email == "None" || email == "null") {
-                activity?.makeLongToast("Enter your email")
+                activity?.makeLongToast("You can't leave email field blank")
             } else if (mobileNumber == "" || mobileNumber == "None" || mobileNumber == "null") {
-                activity?.makeLongToast("Enter your mobile")
-            } else if (idnumber == "" || idnumber == "None" || idnumber == "null") {
-                activity?.makeLongToast("Enter the Id Number")
+                activity?.makeLongToast("You can't leave Mobile field blank")
             } else {
                 //save to Firebase
                 if (!progressDialog.isShowing) { progressDialog.show()}

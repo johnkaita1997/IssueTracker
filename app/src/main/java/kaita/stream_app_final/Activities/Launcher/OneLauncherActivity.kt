@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.DoubleBounce
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -37,7 +38,6 @@ class OneLauncherActivity : AppCompatActivity() {
     lateinit var handler: Handler
     lateinit var runnable: Runnable
     var stop = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,17 +71,39 @@ class OneLauncherActivity : AppCompatActivity() {
 
     private fun learn_how_it_works_Listener() {
         learn_How_It_Works.setOnClickListener {
-            FirebaseDatabase.getInstance().reference.child("credentials").child("lock").addListenerForSingleValueEvent(object: ValueEventListener{
+            FirebaseDatabase.getInstance().reference.child("credentials").child("lock").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(error: DatabaseError) {
                     makeLongToast("Error: ${error.message}")
                 }
+
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
+                        learn_How_It_Works.visibility = View.GONE
                         makeLongToast("Not Verified")
                     } else {
-                        handler.removeCallbacks(runnable);
-                        stop = true
-                        goToActivity(this@OneLauncherActivity, LearnHowItWorks::class.java)
+                        if (FirebaseAuth.getInstance().currentUser != null) {
+                            FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser.uid).child("ban").addListenerForSingleValueEvent(object : ValueEventListener {
+                                override fun onCancelled(error: DatabaseError) {
+                                    makeLongToast("Error: ${error.message}")
+                                }
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    if (snapshot.exists()) {
+                                        learn_How_It_Works.visibility = View.GONE
+                                        makeLongToast("You've been locked out of your account due to suspicious activity.")
+                                    } else {
+                                        makeLongToast("Not There")
+                                        handler.removeCallbacks(runnable);
+                                        stop = true
+                                        goToActivity(this@OneLauncherActivity, LearnHowItWorks::class.java)
+                                    }
+                                }
+                            })
+                        } else {
+                            makeLongToast("There")
+                            handler.removeCallbacks(runnable);
+                            stop = true
+                            goToActivity(this@OneLauncherActivity, LearnHowItWorks::class.java)
+                        }
                     }
                 }
             })
@@ -125,7 +147,23 @@ class OneLauncherActivity : AppCompatActivity() {
                         if (snapshot.exists()) {
                             makeLongToast("Not Verified")
                         } else {
-                            handler.postDelayed(runnable, 4000)
+                            if (FirebaseAuth.getInstance().currentUser != null) {
+                                FirebaseDatabase.getInstance().reference.child("users").child(FirebaseAuth.getInstance().currentUser.uid).child("ban").addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onCancelled(error: DatabaseError) {
+                                        makeLongToast("Error: ${error.message}")
+                                    }
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.exists()) {
+                                            learn_How_It_Works.visibility = View.GONE
+                                            makeLongToast("You've been locked out of your account due to suspicious activity.")
+                                        } else {
+                                            handler.postDelayed(runnable, 4000)
+                                        }
+                                    }
+                                })
+                            } else {
+                                handler.postDelayed(runnable, 4000)
+                            }
                         }
                     }
                 })

@@ -16,11 +16,13 @@ class BetsPlacedViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
     private var bettername: TextView = itemView.findViewById(R.id.better_name)
     private var betteramount: TextView = itemView.findViewById(R.id.better_amount)
+    private var betterdate: TextView = itemView.findViewById(R.id.better_date)
 
     fun bind(betsplaced: BetsPlaced, databaseReference: DatabaseReference, viewHolder: BetsPlacedViewHolder, theactivity: FragmentActivity, source: View?) {
         bettername.text = betsplaced.bettername
         //betteramount.text = "Kes: " + betsplaced.bettamount + "\nBet: ${betsplaced.streamoption!!.toUpperCase()}"
         betteramount.text = "Kes: " + betsplaced.bettamount
+        betterdate.text = betsplaced.bettdate
     }
 
 }

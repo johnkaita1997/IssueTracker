@@ -1,7 +1,8 @@
 package kaita.stream_app_final.Activities.Admin
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.telephony.SmsManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -178,9 +179,10 @@ class ContributionsActivity : AppCompatActivity() {
 
     fun sendSMS(phoneNo: String?, msg: String?) {
         try {
-            val smsManager: SmsManager = SmsManager.getDefault()
-            smsManager.sendTextMessage(phoneNo, null, msg, null, null)
-            makeLongToast("Message was sent")
+            val uri = Uri.parse("smsto:$phoneNo")
+            val intent = Intent(Intent.ACTION_SENDTO, uri)
+            intent.putExtra("sms_body", "$msg")
+            startActivity(intent)
         } catch (ex: Exception) {
             makeLongToast(ex.message.toString())
         }

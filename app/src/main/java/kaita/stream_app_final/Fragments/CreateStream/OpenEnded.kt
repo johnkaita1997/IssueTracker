@@ -95,7 +95,7 @@ class OpenEnded : Fragment() {
                     val selectedcashday: Date = formatter.parse(thecashday)
 
                     if (title == "" || description == "") {
-                        requireActivity().showAlertDialog("Enter both the stream tittle and Stream description")
+                        requireActivity().showAlertDialog("Enter both the stream subject and Stream description")
                     } else if (joinnumber == "") {
                         requireActivity().showAlertDialog("Select the Max Number Of Streamers who can join your stream")
                     } else if (last_day == "" || cash_day == "") {

@@ -2,21 +2,22 @@ package kaita.stream_app_final.Fragments.General
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.Nullable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import kaita.stream_app_final.Adapteres.FirebaseChecker
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kaita.stream_app_final.Adapteres.SectionPagerAdapter
 import kaita.stream_app_final.Adapteres.setSafeOnClickListener
 import kaita.stream_app_final.AppConstants.Constants.firebaseAuth
+import kaita.stream_app_final.Extensions.makeLongToast
 import kaita.stream_app_final.Fragments.ProfileFragments.EditProfile
 import kaita.stream_app_final.Fragments.ProfileFragments.ProfileOperations
 import kaita.stream_app_final.R
-import kotlinx.android.synthetic.main.fragment_profile.*
 import kotlinx.android.synthetic.main.fragment_profile.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +31,7 @@ class ProfileFragment : Fragment() {
     private lateinit var fragment: Fragment
     private lateinit var fm: FragmentManager
     private lateinit var ft: FragmentTransaction
+    private lateinit var menu: Menu
 
     @Nullable
     override fun onCreateView( inflater: LayoutInflater, @Nullable container: ViewGroup?, @Nullable savedInstanceState: Bundle? ): View? {
@@ -41,16 +43,22 @@ class ProfileFragment : Fragment() {
 
     @SuppressLint("ResourceAsColor")
     private fun initall() {
-
-        show_Number
-
-        FirebaseChecker().load_selected_Streamer_Stream(firebaseAuth.currentUser.uid){
-            if (it.exists()) {
-                source.show_Number.setText("1")
-            } else {
-                source.show_Number.setText("0")
-            }
-        }
+        dotted_Menu_Set_Up()
+        val query = FirebaseDatabase.getInstance().reference.child("streams")
+            .orderByChild("host")
+            .equalTo(firebaseAuth.currentUser.uid)
+        query.addListenerForSingleValueEvent(object: ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        requireActivity().makeLongToast("Error: ${error.message}")
+                    }
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (snapshot.exists() && snapshot.hasChildren()) {
+                            source.show_Number.setText(snapshot.childrenCount.toString())
+                        } else {
+                            //requireActivity().makeLongToast("Error!, missing info.")
+                        }
+                    }
+                })
 
         fm = childFragmentManager
         ft = fm.beginTransaction()
@@ -78,6 +86,16 @@ class ProfileFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
             setupViewPager()
         }
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        val menuItem: MenuItem = menu.findItem(R.id.search)
+        menuItem.setVisible(false)
+    }
+
+    private fun dotted_Menu_Set_Up() {
+        setHasOptionsMenu(true);
     }
 
     private fun setupViewPager() {

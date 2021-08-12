@@ -48,23 +48,14 @@ class Complains : AppCompatActivity() {
                 }
             }
         })
-
-        //Initialize FirebasePagingOptions
-        Constants.options = DatabasePagingOptions.Builder<Post>()
-            .setLifecycleOwner(this)
-            .setQuery(Constants.streams, Constants.config, Post::class.java)
-            .build()
-
         loadFirebaseAdapter()
     }
 
     private fun loadFirebaseAdapter() {
-
         val query = FirebaseDatabase.getInstance().reference.child("complains");
         val options = FirebaseRecyclerOptions.Builder<Complained>()
             .setQuery(query, Complained::class.java)
             .build()
-
        complainsAdapter = object : FirebaseRecyclerAdapter<Complained, ComplainViewHolder>(options) {
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int ): ComplainViewHolder {
                 return ComplainViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.recycler_complains, parent, false))
@@ -74,7 +65,6 @@ class Complains : AppCompatActivity() {
                 holder.bind(complain, holder, this@Complains, databaseRerence)
             }
         }
-
         complains_RecyclerView.adapter =complainsAdapter
     }
 

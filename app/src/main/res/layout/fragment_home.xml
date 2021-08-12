@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -20,8 +21,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="2">
+                    android:orientation="horizontal">
 
                     <br.com.simplepass.loading_button_lib.customViews.CircularProgressButton
                         android:id="@+id/create_a_stream_button"
@@ -32,7 +32,7 @@
                         android:layout_marginTop="10dp"
                         android:layout_weight="1"
                         android:background="@color/mainicolor"
-                        android:text="Create A Stream"
+                        android:text="Create A Stream - Bet"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
                         app:initialCornerAngle="27dp"
@@ -43,9 +43,10 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/categoris_recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp" />
+                    android:layout_height="50dp" />
 
                 <androidx.recyclerview.widget.RecyclerView
+                    android:paddingBottom="200dp"
                     android:id="@+id/recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="632dp" />
@@ -54,6 +55,6 @@
 
         </RelativeLayout>
 
-    </ScrollView>
+    </LinearLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

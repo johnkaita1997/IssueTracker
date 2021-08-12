@@ -47,7 +47,7 @@ fun Context.dismissredirect() {
 
 fun Context.showAlertDialog(message: String) {
     alert = AlertDialog.Builder(this)
-        .setTitle("KMS")
+        .setTitle("Stream")
         .setCancelable(false)
         .setMessage(message)
         .setIcon(R.drawable.mainicon)
